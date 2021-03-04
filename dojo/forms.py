@@ -289,6 +289,7 @@ class DojoMetaDataForm(forms.ModelForm):
 
 class ImportScanForm(forms.Form):
     SCAN_TYPE_CHOICES = (("", "Please Select a Scan Type"),
+                         ("PMD Scan", "PMD Scan"),
                          ("Netsparker Scan", "Netsparker Scan"),
                          ("Burp Scan", "Burp Scan"),
                          ("Burp REST API", "Burp REST API"),
