@@ -100,6 +100,7 @@ from dojo.tools.sarif.parser import SarifParser
 from dojo.tools.ossindex_devaudit.parser import OssIndexDevauditParser
 from dojo.tools.scantist.parser import ScantistJSONParser
 from dojo.tools.pmd.parser import PMDCSVParser
+from dojo.tools.tfsec.parser import TfsecParser
 
 
 __author__ = 'Jay Paz'
@@ -319,6 +320,8 @@ def import_parser_factory(file, test, active, verified, scan_type=None):
         parser = ScantistJSONParser(file, test)
     elif scan_type == 'PMD Scan':
         parser = PMDCSVParser(file, test)
+    elif scan_type == 'Tfsec Scan':
+        parser = TfsecParser(file, test)
     else:
         raise ValueError('Unknown Test Type')
 
