@@ -29,7 +29,7 @@ class PmdParser(object):
 
         for row in csvarray:
             finding = Finding(test=test)
-            finding.title = row["Problem"]
+            finding.title = row["Rule"]
             if row["Priority"] == "5":
                 priority = "Critical"
             elif row["Priority"] == "4":
@@ -46,7 +46,7 @@ class PmdParser(object):
 
             description = "Description: {}\n".format(row['Description'].strip())
             description += "Rule set: {}\n".format(row["Rule set"].strip())
-            description += "Rule: {}\n".format(row["Rule"].strip())
+            description += "Problem : {}\n".format(row["Problem"])
             finding.description = description
             finding.line = row["Line"]
             finding.file_path = row["File"]
