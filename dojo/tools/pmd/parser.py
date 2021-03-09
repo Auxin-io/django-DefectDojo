@@ -30,6 +30,7 @@ class PmdParser(object):
         for row in csvarray:
             finding = Finding(test=test)
             finding.title = row["Rule"]
+            
             if row["Priority"] == "5":
                 priority = "Critical"
             elif row["Priority"] == "4":

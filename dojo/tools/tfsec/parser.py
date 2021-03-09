@@ -29,6 +29,8 @@ class TfsecParser(object):
 
         for row in csvarray:
             finding = Finding(test=test)
+            finding.title = row["Rule"]
+            
             if row["severity"] == "5":
                 priority = "Critical"
             elif row["severity"] == "4":
@@ -56,15 +58,9 @@ class TfsecParser(object):
                 except:
                     finding.url = row["link"].rsplit("for more information", 1)[0].strip()
 
-            if finding is not None:
-                if finding.title is None:
-                    finding.title = ""
-                if finding.description is None:
-                    finding.description = ""
+            key = hashlib.sha256((finding.title + '|' + finding.line + "|" + row["rule_id"]).encode("utf-8")).hexdigest()
 
-                key = hashlib.md5((finding.title + '|' + finding.line + "|" + row["rule_id"]).encode("utf-8")).hexdigest()
-
-                if key not in dupes:
-                    dupes[key] = finding
+            if key not in dupes:
+                dupes[key] = finding
 
         return list(dupes.values())
