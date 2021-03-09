@@ -46,21 +46,15 @@ class PmdParser(object):
 
             description = "Description: {}\n".format(row['Description'].strip())
             description += "Rule set: {}\n".format(row["Rule set"].strip())
-            description += "Problem : {}\n".format(row["Problem"])
+            description += "Problem: {}\n".format(row["Problem"].strip())
             finding.description = description
             finding.line = row["Line"]
             finding.file_path = row["File"]
             finding.component_name = row["Package"]
 
-            if finding is not None:
-                if finding.title is None:
-                    finding.title = ""
-                if finding.description is None:
-                    finding.description = ""
+            key = hashlib.sha256((finding.title + '|' + finding.description).encode("utf-8")).hexdigest()
 
-                key = hashlib.sha256((finding.title + '|' + finding.description).encode("utf-8")).hexdigest()
-
-                if key not in dupes:
-                    dupes[key] = finding
+            if key not in dupes:
+                dupes[key] = finding
 
         return list(dupes.values())
