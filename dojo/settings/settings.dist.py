@@ -793,6 +793,11 @@ if env('DD_DJANGO_METRICS_ENABLED'):
 #   static scanner:  ['title', 'cwe', 'line', 'file_path', 'description']
 #   dynamic scanner: ['title', 'cwe', 'line', 'file_path', 'description']
 HASHCODE_FIELDS_PER_SCANNER = {
+
+    # added by Omer Farooq
+    'AWS Scout2 Scan': ['title', 'description', 'severity', 'cve', 'cwe'],
+    'Scout Suite Scan': ['title', 'description', 'severity', 'cve', 'cwe'],
+     
     # In checkmarx, same CWE may appear with different severities: example "sql injection" (high) and "blind sql injection" (low).
     # Including the severity in the hash_code keeps those findings not duplicate
     'Anchore Engine Scan': ['title', 'severity', 'component_name', 'component_version', 'file_path'],
@@ -869,6 +874,11 @@ DEDUPE_ALGO_UNIQUE_ID_FROM_TOOL_OR_HASH_CODE = 'unique_id_from_tool_or_hash_code
 # Key = the scan_type from factory.py (= the test_type)
 # Default is DEDUPE_ALGO_LEGACY
 DEDUPLICATION_ALGORITHM_PER_PARSER = {
+
+    # added by Omer Farooq
+    'AWS Scout2 Scan': DEDUPE_ALGO_HASH_CODE,
+    'Scout Suite Scan': DEDUPE_ALGO_HASH_CODE,
+
     'Anchore Engine Scan': DEDUPE_ALGO_HASH_CODE,
     'anchore_grype': DEDUPE_ALGO_UNIQUE_ID_FROM_TOOL,
     'Burp REST API': DEDUPE_ALGO_UNIQUE_ID_FROM_TOOL,
