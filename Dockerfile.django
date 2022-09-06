@@ -109,7 +109,7 @@ ENV \
   # Only variables that are not defined in settings.dist.py
   DD_ADMIN_USER=admin \
   DD_ADMIN_MAIL=admin@defectdojo.local \
-  DD_ADMIN_PASSWORD='' \
+  DD_ADMIN_PASSWORD='abc123' \
   DD_ADMIN_FIRST_NAME=Admin \
   DD_ADMIN_LAST_NAME=User \
   DD_CELERY_LOG_LEVEL="INFO" \
