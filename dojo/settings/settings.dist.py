@@ -229,6 +229,9 @@ env = environ.Env(
     # List of acceptable file types that can be uploaded to a given object via arbitrary file upload
     DD_FILE_UPLOAD_TYPES=(list, ['.txt', '.pdf', '.json', '.xml', '.csv', '.yml', '.png', '.jpeg',
                                  '.html', '.sarif', '.xslx', '.doc', '.html', '.js', '.nessus', '.zip']),
+    # When disabled, existing user tokens will not be removed but it will not be
+    # possible to create new and it will not be possible to use exising.
+    DD_API_TOKENS_ENABLED=(bool, True),
 )
 
 
@@ -671,11 +674,12 @@ DJANGO_ADMIN_ENABLED = env('DD_DJANGO_ADMIN_ENABLED')
 # API V2
 # ------------------------------------------------------------------------------
 
+API_TOKENS_ENABLED = env('DD_API_TOKENS_ENABLED')
+
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.BasicAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
@@ -689,18 +693,31 @@ REST_FRAMEWORK = {
     'EXCEPTION_HANDLER': 'dojo.api_v2.exception_handler.custom_exception_handler'
 }
 
+if API_TOKENS_ENABLED:
+    REST_FRAMEWORK['DEFAULT_AUTHENTICATION_CLASSES'] += ('rest_framework.authentication.TokenAuthentication',)
+
 SWAGGER_SETTINGS = {
     'SECURITY_DEFINITIONS': {
-        'api_key': {
+        'basicAuth': {
+            'type': 'basic'
+        },
+        'cookieAuth': {
             'type': 'apiKey',
-            'in': 'header',
-            'name': 'Authorization'
-        }
+            'in': 'cookie',
+            'name': 'sessionid'
+        },
     },
     'DOC_EXPANSION': "none",
     'JSON_EDITOR': True,
     'SHOW_REQUEST_HEADERS': True,
 }
+
+if API_TOKENS_ENABLED:
+    SWAGGER_SETTINGS['SECURITY_DEFINITIONS']['tokenAuth'] = {
+        'type': 'apiKey',
+        'in': 'header',
+        'name': 'Authorization'
+    }
 
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Defect Dojo API v2',
@@ -1064,12 +1081,28 @@ if env('DD_DJANGO_METRICS_ENABLED'):
 #   static scanner:  ['title', 'cwe', 'line', 'file_path', 'description']
 #   dynamic scanner: ['title', 'cwe', 'line', 'file_path', 'description']
 HASHCODE_FIELDS_PER_SCANNER = {
+
+##################################################################################################
+################################## CUSTOM CHANGES OUR PARSERS ####################################
+##################################################################################################
+   
+    "Mozilla Observatory Scan": ['title', 'description', 'file_path', 'line'],    
+    'Anchore Grype': ['title', 'severity', 'component_name', 'component_version'],
+    'Bandit Scan': ['file_path', 'line', 'vuln_id_from_tool'],
+    'ZAP Scan': ['title', 'cwe', 'severity'],
+    'TFSec Scan': ['severity', 'vuln_id_from_tool', 'file_path', 'line'],
+    'Scout Suite Scan': ['file_path', 'vuln_id_from_tool'],  # for now we use file_path as there is no attribute for "service"
+    
+
+##################################################################################################
+################################## CUSTOM CHANGES OUR PARSERS ####################################
+##################################################################################################
+
+
     # In checkmarx, same CWE may appear with different severities: example "sql injection" (high) and "blind sql injection" (low).
     # Including the severity in the hash_code keeps those findings not duplicate
     'Anchore Engine Scan': ['title', 'severity', 'component_name', 'component_version', 'file_path'],
-    'Anchore Grype': ['title', 'severity', 'component_name', 'component_version'],
     'Aqua Scan': ['severity', 'vulnerability_ids', 'component_name', 'component_version'],
-    'Bandit Scan': ['file_path', 'line', 'vuln_id_from_tool','description'],
     'CargoAudit Scan': ['vulnerability_ids', 'severity', 'component_name', 'component_version', 'vuln_id_from_tool'],
     'Checkmarx Scan': ['cwe', 'severity', 'file_path'],
     'Checkmarx OSA': ['vulnerability_ids', 'component_name'],
@@ -1088,7 +1121,6 @@ HASHCODE_FIELDS_PER_SCANNER = {
     'Yarn Audit Scan': ['title', 'severity', 'file_path', 'vulnerability_ids', 'cwe'],
     # possible improvement: in the scanner put the library name into file_path, then dedup on vulnerability_ids + file_path + severity
     'Whitesource Scan': ['title', 'severity', 'description'],
-    'ZAP Scan': ['title', 'cwe', 'severity'],
     'Qualys Scan': ['title', 'severity'],
     # 'Qualys Webapp Scan': ['title', 'unique_id_from_tool'],
     'PHP Symfony Security Check': ['title', 'vulnerability_ids'],
@@ -1100,12 +1132,10 @@ HASHCODE_FIELDS_PER_SCANNER = {
     'Acunetix Scan': ['title', 'description'],
     'Terrascan Scan': ['vuln_id_from_tool', 'title', 'severity', 'file_path', 'line', 'component_name'],
     'Trivy Scan': ['title', 'severity', 'vulnerability_ids', 'cwe'],
-    'TFSec Scan': ['severity', 'vuln_id_from_tool', 'file_path', 'line'],
     'Snyk Scan': ['vuln_id_from_tool', 'file_path', 'component_name', 'component_version'],
     'GitLab Dependency Scanning Report': ['title', 'vulnerability_ids', 'file_path', 'component_name', 'component_version'],
     'SpotBugs Scan': ['cwe', 'severity', 'file_path', 'line'],
     'JFrog Xray Unified Scan': ['vulnerability_ids', 'file_path', 'component_name', 'component_version'],
-    'Scout Suite Scan': ['file_path', 'vuln_id_from_tool'],  # for now we use file_path as there is no attribute for "service"
     'AWS Security Hub Scan': ['unique_id_from_tool'],
     'Meterian Scan': ['cwe', 'component_name', 'component_version', 'description', 'severity'],
     'Github Vulnerability Scan': ['unique_id_from_tool'],
@@ -1123,14 +1153,38 @@ HASHCODE_FIELDS_PER_SCANNER = {
     'Hydra Scan': ['title', 'description'],
     'DrHeader JSON Importer': ['title', 'description'],
     'PWN SAST': ['title', 'description'],
+    'Whispers': ['vuln_id_from_tool', 'file_path', 'line'],
+    'Blackduck Hub Scan': ['title', 'vulnerability_ids', 'component_name', 'component_version'],
+    'BlackDuck API': ['unique_id_from_tool'],
+    'docker-bench-security Scan': ['unique_id_from_tool'],
+    'Veracode SourceClear Scan': ['title', 'vulnerability_ids', 'component_name', 'component_version'],
+    'Twistlock Image Scan': ['title', 'severity', 'component_name', 'component_version'],
+    
+    
 }
 
 # This tells if we should accept cwe=0 when computing hash_code with a configurable list of fields from HASHCODE_FIELDS_PER_SCANNER (this setting doesn't apply to legacy algorithm)
 # If False and cwe = 0, then the hash_code computation will fallback to legacy algorithm for the concerned finding
 # Default is True (if scanner is not configured here but is configured in HASHCODE_FIELDS_PER_SCANNER, it allows null cwe)
+
+
 HASHCODE_ALLOWS_NULL_CWE = {
-    'Anchore Engine Scan': True,
+
+##################################################################################################
+################################## CUSTOM CHANGES OUR PARSERS ####################################
+##################################################################################################
+
     'Anchore Grype': True,
+    'ZAP Scan': False,
+    'Scout Suite Scan': True,
+
+
+
+##################################################################################################
+################################## CUSTOM CHANGES OUR PARSERS ####################################
+##################################################################################################
+
+    'Anchore Engine Scan': True,
     'AWS Prowler Scan': True,
     'Checkmarx Scan': False,
     'Checkmarx OSA': True,
@@ -1143,13 +1197,11 @@ HASHCODE_ALLOWS_NULL_CWE = {
     'NPM Audit Scan': True,
     'Yarn Audit Scan': True,
     'Whitesource Scan': True,
-    'ZAP Scan': False,
     'Qualys Scan': True,
     'DSOP Scan': True,
     'Acunetix Scan': True,
     'Trivy Scan': True,
     'SpotBugs Scan': False,
-    'Scout Suite Scan': True,
     'AWS Security Hub Scan': True,
     'Meterian Scan': True,
     'SARIF': True,
@@ -1157,6 +1209,8 @@ HASHCODE_ALLOWS_NULL_CWE = {
     'Semgrep JSON Report': True,
     'Generic Findings Import': True,
     'Edgescan Scan': True,
+    'Veracode SourceClear Scan': True,
+    'Twistlock Image Scan': True
 }
 
 # List of fields that are known to be usable in hash_code computation)
@@ -1196,13 +1250,29 @@ DEDUPE_ALGO_ENDPOINT_FIELDS = ['host', 'path']
 # Key = the scan_type from factory.py (= the test_type)
 # Default is DEDUPE_ALGO_LEGACY
 DEDUPLICATION_ALGORITHM_PER_PARSER = {
-    'Anchore Engine Scan': DEDUPE_ALGO_HASH_CODE,
+
+##################################################################################################
+################################## CUSTOM CHANGES OUR PARSERS ####################################
+##################################################################################################
+
+    'Mozilla Observatory Scan':DEDUPE_ALGO_HASH_CODE,
     'Anchore Grype': DEDUPE_ALGO_HASH_CODE,
+    'Bandit Scan': DEDUPE_ALGO_HASH_CODE,
+    'ZAP Scan': DEDUPE_ALGO_HASH_CODE,
+    'TFSec Scan': DEDUPE_ALGO_HASH_CODE,
+    'Scout Suite Scan': DEDUPE_ALGO_HASH_CODE,
+
+
+##################################################################################################
+################################## CUSTOM CHANGES OUR PARSERS ####################################
+##################################################################################################
+
+
+    'Anchore Engine Scan': DEDUPE_ALGO_HASH_CODE,
     'Aqua Scan': DEDUPE_ALGO_HASH_CODE,
     'AuditJS Scan': DEDUPE_ALGO_UNIQUE_ID_FROM_TOOL,
     'AWS Prowler Scan': DEDUPE_ALGO_HASH_CODE,
     'Burp REST API': DEDUPE_ALGO_UNIQUE_ID_FROM_TOOL,
-    'Bandit Scan': DEDUPE_ALGO_HASH_CODE,
     'CargoAudit Scan': DEDUPE_ALGO_HASH_CODE,
     'Checkmarx Scan detailed': DEDUPE_ALGO_UNIQUE_ID_FROM_TOOL,
     'Checkmarx Scan': DEDUPE_ALGO_HASH_CODE,
@@ -1221,7 +1291,6 @@ DEDUPLICATION_ALGORITHM_PER_PARSER = {
     'NPM Audit Scan': DEDUPE_ALGO_HASH_CODE,
     'Yarn Audit Scan': DEDUPE_ALGO_HASH_CODE,
     'Whitesource Scan': DEDUPE_ALGO_HASH_CODE,
-    'ZAP Scan': DEDUPE_ALGO_HASH_CODE,
     'Qualys Scan': DEDUPE_ALGO_HASH_CODE,
     'PHP Symfony Security Check': DEDUPE_ALGO_HASH_CODE,
     'Acunetix Scan': DEDUPE_ALGO_HASH_CODE,
@@ -1229,12 +1298,12 @@ DEDUPLICATION_ALGORITHM_PER_PARSER = {
     'Clair Klar Scan': DEDUPE_ALGO_HASH_CODE,
     # 'Qualys Webapp Scan': DEDUPE_ALGO_UNIQUE_ID_FROM_TOOL,  # Must also uncomment qualys webapp line in hashcode fields per scanner
     'Veracode Scan': DEDUPE_ALGO_UNIQUE_ID_FROM_TOOL_OR_HASH_CODE,
+    'Veracode SourceClear Scan': DEDUPE_ALGO_HASH_CODE,
     # for backwards compatibility because someone decided to rename this scanner:
     'Symfony Security Check': DEDUPE_ALGO_HASH_CODE,
     'DSOP Scan': DEDUPE_ALGO_HASH_CODE,
     'Terrascan Scan': DEDUPE_ALGO_HASH_CODE,
     'Trivy Scan': DEDUPE_ALGO_HASH_CODE,
-    'TFSec Scan': DEDUPE_ALGO_HASH_CODE,
     'HackerOne Cases': DEDUPE_ALGO_UNIQUE_ID_FROM_TOOL_OR_HASH_CODE,
     'Snyk Scan': DEDUPE_ALGO_HASH_CODE,
     'GitLab Dependency Scanning Report': DEDUPE_ALGO_HASH_CODE,
@@ -1242,13 +1311,12 @@ DEDUPLICATION_ALGORITHM_PER_PARSER = {
     'Checkov Scan': DEDUPE_ALGO_HASH_CODE,
     'SpotBugs Scan': DEDUPE_ALGO_HASH_CODE,
     'JFrog Xray Unified Scan': DEDUPE_ALGO_HASH_CODE,
-    'Scout Suite Scan': DEDUPE_ALGO_HASH_CODE,
     'AWS Security Hub Scan': DEDUPE_ALGO_UNIQUE_ID_FROM_TOOL,
     'Meterian Scan': DEDUPE_ALGO_HASH_CODE,
     'Github Vulnerability Scan': DEDUPE_ALGO_UNIQUE_ID_FROM_TOOL,
     'Cloudsploit Scan': DEDUPE_ALGO_HASH_CODE,
     'KICS Scan': DEDUPE_ALGO_HASH_CODE,
-    'SARIF': DEDUPE_ALGO_HASH_CODE,
+    'SARIF': DEDUPE_ALGO_UNIQUE_ID_FROM_TOOL_OR_HASH_CODE,
     'Azure Security Center Recommendations Scan': DEDUPE_ALGO_UNIQUE_ID_FROM_TOOL,
     'Hadolint Dockerfile check': DEDUPE_ALGO_HASH_CODE,
     'Semgrep JSON Report': DEDUPE_ALGO_HASH_CODE,
@@ -1269,6 +1337,11 @@ DEDUPLICATION_ALGORITHM_PER_PARSER = {
     'Hydra Scan': DEDUPE_ALGO_HASH_CODE,
     'DrHeader JSON Importer': DEDUPE_ALGO_HASH_CODE,
     'PWN SAST': DEDUPE_ALGO_HASH_CODE,
+    'Whispers': DEDUPE_ALGO_HASH_CODE,
+    'Blackduck Hub Scan': DEDUPE_ALGO_HASH_CODE,
+    'BlackDuck API': DEDUPE_ALGO_UNIQUE_ID_FROM_TOOL,
+    'docker-bench-security Scan': DEDUPE_ALGO_HASH_CODE,
+    'Twistlock Image Scan': DEDUPE_ALGO_HASH_CODE,
 }
 
 DUPE_DELETE_MAX_PER_RUN = env('DD_DUPE_DELETE_MAX_PER_RUN')
