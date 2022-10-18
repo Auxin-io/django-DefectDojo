@@ -123,8 +123,8 @@ ENV \
   # See https://docs.celeryproject.org/en/stable/userguide/workers.html#id12 for more details
   DD_CELERY_WORKER_POOL_TYPE="prefork" \
   DD_CELERY_WORKER_AUTOSCALE_MIN="2" \
-  DD_CELERY_WORKER_AUTOSCALE_MAX="8" \
-  DD_CELERY_WORKER_CONCURRENCY="8" \
+  DD_CELERY_WORKER_AUTOSCALE_MAX="4" \
+  DD_CELERY_WORKER_CONCURRENCY="4" \
   DD_CELERY_WORKER_PREFETCH_MULTIPLIER="128" \
   DD_INITIALIZE=true \
   DD_UWSGI_MODE="socket" \
