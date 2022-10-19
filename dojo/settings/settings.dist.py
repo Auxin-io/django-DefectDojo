@@ -217,12 +217,12 @@ env = environ.Env(
     # when enabled, finding importing will occur asynchronously, default False
     DD_ASYNC_FINDING_IMPORT=(bool, True),
     # The number of findings to be processed per celeryworker
-    DD_ASYNC_FINDING_IMPORT_CHUNK_SIZE=(int, 200),
+    DD_ASYNC_FINDING_IMPORT_CHUNK_SIZE=(int, 100),
     # When enabled, deleting objects will be occur from the bottom up. In the example of deleting an engagement
     # The objects will be deleted as follows Endpoints -> Findings -> Tests -> Engagement
     DD_ASYNC_OBJECT_DELETE=(bool, True),
     # The number of objects to be deleted per celeryworker
-    DD_ASYNC_OBEJECT_DELETE_CHUNK_SIZE=(int, 200),
+    DD_ASYNC_OBEJECT_DELETE_CHUNK_SIZE=(int, 100),
     # When enabled, display the preview of objects to be deleted. This can take a long time to render
     # for very large objects
     DD_DELETE_PREVIEW=(bool, True),

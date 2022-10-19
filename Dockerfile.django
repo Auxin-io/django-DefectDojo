@@ -118,19 +118,19 @@ ENV \
   DD_ADMIN_FIRST_NAME=Admin \
   DD_ADMIN_LAST_NAME=User \
   DD_CELERY_LOG_LEVEL="INFO" \
-  # DD_CELERY_WORKER_POOL_TYPE="solo" \
+  DD_CELERY_WORKER_POOL_TYPE="solo" \
   # Enable prefork and options below to ramp-up celeryworker performance. Presets should work fine for a machine with 8GB of RAM, while still leaving room.
   # See https://docs.celeryproject.org/en/stable/userguide/workers.html#id12 for more details
   DD_CELERY_WORKER_POOL_TYPE="prefork" \
   DD_CELERY_WORKER_AUTOSCALE_MIN="2" \
-  DD_CELERY_WORKER_AUTOSCALE_MAX="4" \
-  DD_CELERY_WORKER_CONCURRENCY="4" \
+  DD_CELERY_WORKER_AUTOSCALE_MAX="3" \
+  DD_CELERY_WORKER_CONCURRENCY="8" \
   DD_CELERY_WORKER_PREFETCH_MULTIPLIER="128" \
   DD_INITIALIZE=true \
   DD_UWSGI_MODE="socket" \
   DD_UWSGI_ENDPOINT="0.0.0.0:3031" \
-  DD_UWSGI_NUM_OF_PROCESSES="2" \
-  DD_UWSGI_NUM_OF_THREADS="2"
+  DD_UWSGI_NUM_OF_PROCESSES="4" \
+  DD_UWSGI_NUM_OF_THREADS="4"
 ENTRYPOINT ["/entrypoint-uwsgi.sh"]
 
 FROM django as django-unittests
