@@ -300,7 +300,15 @@ class DojoDefaultImporter(object):
         logger.debug('IMPORT_SCAN: Processing findings')
         new_findings = []
         if settings.ASYNC_FINDING_IMPORT:
-            chunk_list = importer_utils.chunk_list(parsed_findings)
+            ##########################################################################################
+            ############################## CUSTOM CHANGES ############################################
+            ##########################################################################################
+            
+            chunk_list = importer_utils.chunk_list(list(parsed_findings))
+
+            ##########################################################################################
+            ############################## CUSTOM CHANGES ############################################
+            ##########################################################################################
             results_list = []
             # First kick off all the workers
             for findings_list in chunk_list:
