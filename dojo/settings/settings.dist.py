@@ -1094,6 +1094,8 @@ HASHCODE_FIELDS_PER_SCANNER = {
     'Scout Suite Scan': ['file_path', 'vuln_id_from_tool'],  # for now we use file_path as there is no attribute for "service"
     
 
+    'Log Analyzer' : ['title','description','file_path'],
+
 ##################################################################################################
 ################################## CUSTOM CHANGES OUR PARSERS ####################################
 ##################################################################################################
@@ -1177,6 +1179,7 @@ HASHCODE_ALLOWS_NULL_CWE = {
     'Anchore Grype': True,
     'ZAP Scan': False,
     'Scout Suite Scan': True,
+    'Log Analyzer' : True,
 
 
 
@@ -1261,6 +1264,7 @@ DEDUPLICATION_ALGORITHM_PER_PARSER = {
     'ZAP Scan': DEDUPE_ALGO_HASH_CODE,
     'TFSec Scan': DEDUPE_ALGO_HASH_CODE,
     'Scout Suite Scan': DEDUPE_ALGO_HASH_CODE,
+    'Log Analyzer': DEDUPE_ALGO_HASH_CODE,
 
 
 ##################################################################################################

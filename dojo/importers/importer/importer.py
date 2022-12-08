@@ -305,7 +305,7 @@ class DojoDefaultImporter(object):
             ##########################################################################################
             
             chunk_list = importer_utils.chunk_list(list(parsed_findings))
-
+            logger.debug(chunk_list)
             ##########################################################################################
             ############################## CUSTOM CHANGES ############################################
             ##########################################################################################
@@ -322,6 +322,7 @@ class DojoDefaultImporter(object):
             # After all tasks have been started, time to pull the results
             logger.info('IMPORT_SCAN: Collecting Findings')
             for results in results_list:
+
                 serial_new_findings = results.get()
                 new_findings += [next(serializers.deserialize("json", finding)).object for finding in serial_new_findings]
             logger.info('IMPORT_SCAN: All Findings Collected')
