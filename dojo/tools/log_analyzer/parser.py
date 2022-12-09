@@ -31,6 +31,7 @@ class LogAnalyzerParser(object):
                 id = item["_source"]["user"]["id"]
             except:
                 name= "Null"
+                id = "Null"
             try:
                type= item["_source"]["aws"]["cloudtrail"]["user_identity"]["session_context"]["session_issuer"]["type"]
                account_id =item["_source"]["aws"]["cloudtrail"]["user_identity"]["session_context"]["session_issuer"]["account_id"]
