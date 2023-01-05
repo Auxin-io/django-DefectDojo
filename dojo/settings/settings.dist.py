@@ -1095,6 +1095,7 @@ HASHCODE_FIELDS_PER_SCANNER = {
     
 
     'Log Analyzer' : ['title','description','file_path'],
+    'AWS CIS Scan' : ['title', 'description'],
 
 ##################################################################################################
 ################################## CUSTOM CHANGES OUR PARSERS ####################################
@@ -1180,7 +1181,7 @@ HASHCODE_ALLOWS_NULL_CWE = {
     'ZAP Scan': False,
     'Scout Suite Scan': True,
     'Log Analyzer' : True,
-
+    'AWS CIS Scan': True,
 
 
 ##################################################################################################
@@ -1265,6 +1266,7 @@ DEDUPLICATION_ALGORITHM_PER_PARSER = {
     'TFSec Scan': DEDUPE_ALGO_HASH_CODE,
     'Scout Suite Scan': DEDUPE_ALGO_HASH_CODE,
     'Log Analyzer': DEDUPE_ALGO_HASH_CODE,
+    'AWS CIS Scan': DEDUPE_ALGO_HASH_CODE,
 
 
 ##################################################################################################
