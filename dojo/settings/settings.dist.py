@@ -1096,6 +1096,10 @@ HASHCODE_FIELDS_PER_SCANNER = {
 
     'Log Analyzer' : ['title','description','file_path'],
     'AWS CIS Scan' : ['title', 'description'],
+    'AWS HIPAA Scan' : ['title', 'description'],
+    'AWS NIST Scan' : ['title', 'description'],
+    'AWS SOC2 Scan' : ['title', 'description'],
+    'AWS PCI Scan' : ['title', 'description'],
 
 ##################################################################################################
 ################################## CUSTOM CHANGES OUR PARSERS ####################################
@@ -1182,6 +1186,10 @@ HASHCODE_ALLOWS_NULL_CWE = {
     'Scout Suite Scan': True,
     'Log Analyzer' : True,
     'AWS CIS Scan': True,
+    'AWS HIPAA Scan': True,
+    'AWS NIST Scan': True,
+    'AWS SOC2 Scan': True,
+    'AWS PCI Scan': True,
 
 
 ##################################################################################################
@@ -1267,6 +1275,10 @@ DEDUPLICATION_ALGORITHM_PER_PARSER = {
     'Scout Suite Scan': DEDUPE_ALGO_HASH_CODE,
     'Log Analyzer': DEDUPE_ALGO_HASH_CODE,
     'AWS CIS Scan': DEDUPE_ALGO_HASH_CODE,
+    'AWS HIPAA Scan': DEDUPE_ALGO_HASH_CODE,
+    'AWS NIST Scan': DEDUPE_ALGO_HASH_CODE,
+    'AWS SOC2 Scan': DEDUPE_ALGO_HASH_CODE,
+    'AWS PCI Scan': DEDUPE_ALGO_HASH_CODE,
 
 
 ##################################################################################################
