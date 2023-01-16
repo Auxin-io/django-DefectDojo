@@ -30,42 +30,54 @@ class LogAnalyzerParser(object):
                 name = item["_source"]["user"]["name"]
                 id = item["_source"]["user"]["id"]
             except:
-                name= "Null"
+                name = "Null"
                 id = "Null"
-            try:
-               type= item["_source"]["aws"]["cloudtrail"]["user_identity"]["session_context"]["session_issuer"]["type"]
-               account_id =item["_source"]["aws"]["cloudtrail"]["user_identity"]["session_context"]["session_issuer"]["account_id"]
 
+            try:
+                type_of = item["_source"]["aws"]["cloudtrail"]["user_identity"]["session_context"]["session_issuer"]["type"]
+                account_id = item["_source"]["aws"]["cloudtrail"]["user_identity"]["session_context"]["session_issuer"]["account_id"]
             except:
-                type="Null"
+                type_of = "Null"
                 account_id = "Null"
-            findingdetail = "\n".join(
+
+            try:
+                s3_bucket_name = item["_source"]["aws"]["s3"]["bucket"]["name"]
+            except:
+                raise Exception('s3 bucket name is missing from the report. ' + \
+                                'search_path: ["_source"]["aws"]["s3"]["bucket"]["name"]')
+
+            reference = str(item["_source"]["event"]["original"])
+            file_path = item["_source"]["log"]["file"]["path"]
+
+            description = "\n".join(
                 [
                     "**name** `" + name + "`" ,
                     "**id** `" + id + "`",
-                    "**Role:** `" + type + "`",
+                    "**Role:** `" + type_of + "`",
                     "**Account ID:** `" + account_id + "`",
-                    "**Filename:** `" + item["_source"]["log"]["file"]["path"] + "`",
-                    
+                    "**Filename:** `" + file_path + "`",
                 ]
             )
 
             finding = Finding(
-                title=data["alert_title"],
-                test=test,
-                tags = account_id,
-                description=findingdetail,
-                references = str(item["_source"]["event"]["original"]),
-                # severity=item["issue_severity"].title(),
-                severity=data["alert_severity"],
-                file_path=item["_source"]["log"]["file"]["path"],
-                # line=item["line_number"],
-                # date=find_date,
+                title = data["alert_title"],
+                test = test,
+                description = description,
+                severity = data["alert_severity"],
+                file_path = file_path,
+                references = reference,
                 static_finding=True,
                 dynamic_finding=False,
+                # line=item["line_number"],
+                # date=find_date,
+                # severity=item["issue_severity"].title(),
                 # vuln_id_from_tool=":".join([item["test_name"], item["test_id"]]),
+                # tags = s3_bucket_name,
+                # tags = [s3_bucket_name],
                 nb_occurences=1,
             )
+            finding.unsaved_tags = [s3_bucket_name]
+
             # manage confidence
             # confidence = self.convert_confidence(item.get("issue_confidence"))
             # if confidence:
