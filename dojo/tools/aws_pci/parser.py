@@ -48,7 +48,7 @@ class AWSPCIParser(object):
             resource = result['resource']
             reference = "**Benchmark:** " + result['title'] + "\n" + result['description']
 
-            results.append(Finding(
+            findings = Finding(
                 test = test,
                 title = result["control_title"],
                 description = "**Account Id:** " + result['account_id'] + "\n" + \
@@ -58,11 +58,13 @@ class AWSPCIParser(object):
                               "**Details:** " + result['control_description']+ "\n" + \
                               "**Reason:** " + result['reason'] + "\n" + \
                               "**Status:** " + result['status'] + "\n" + \
-                              "**Control Id:** "+ result['control_id'],
+                              "**Control Id:** " + result['control_id'],
 
                 severity = result['severity'],
                 references = reference
-            ))
+            )
+            
+            results.append(findings)
            
        
         return results
