@@ -45,29 +45,23 @@ class AWSPCIParser(object):
             if result['severity'].strip() == '':
                 result['severity'] = 'Info'
 
-            account_id = result['account_id']
-            region = result['region']
-            service = result['service']
             resource = result['resource']
-            reason = result['reason']
+            reference = "**Benchmark:** " + result['title'] + "\n" + result['description']
 
             results.append(Finding(
                 test = test,
                 title = result["control_title"],
-                description = "**Account Id:** " + account_id + "\n\n" + \
-                              "**Benchmark:** " + result['title'] + "\n" + result['description'] + "\n\n" + \
-                              "**Region:** " + region + "\n\n" + \
-                              "**Service:** " + service + "\n\n" + \
-                              "**Resource:** " + resource + "\n\n" + \
-                              "**Details:** " + result['control_description']+ "\n\n" + \
-                              "**Reason:** " + reason + "\n\n" + \
-                              "**Status:** " + result['status'] + "\n\n" + \
+                description = "**Account Id:** " + result['account_id'] + "\n" + \
+                              "**Region:** " + result['region'] + "\n" + \
+                              "**Service:** " + result['service'] + "\n" + \
+                              "**Resource:** " + resource + "\n" + \
+                              "**Details:** " + result['control_description']+ "\n" + \
+                              "**Reason:** " + result['reason'] + "\n" + \
+                              "**Status:** " + result['status'] + "\n" + \
                               "**Control Id:** "+ result['control_id'],
 
-                # cwe = result['control_id'],
-                # finding.notes.add(result['reason'])
-                mitigation = result['status'],
-                severity = result['severity']
+                severity = result['severity'],
+                references = reference
             ))
            
        
