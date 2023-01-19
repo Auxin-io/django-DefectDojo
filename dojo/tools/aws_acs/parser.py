@@ -6,16 +6,16 @@ from dojo.models import Finding
 __author__ = 'dr3dd529'
 
 
-class AWSAFSParser(object):
+class AWSACSParser(object):
 
     def get_scan_types(self):
-        return ["AWS AFS Scan"]
+        return ["AWS ACS Scan"]
 
     def get_label_for_scan_types(self, scan_type):
         return scan_type
 
     def get_description_for_scan_types(self, scan_type):
-        return "AFS (Auxin Foundational Security) Benchmark for AWS Cloud Compliance - CSV Report"
+        return "ACS (Auxin Compliance Security) Benchmark for AWS Cloud Compliance - CSV Report"
 
     def get_findings(self, filename, test):
         if filename is None:
