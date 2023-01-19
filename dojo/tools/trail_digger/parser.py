@@ -1,6 +1,8 @@
 
 import logging
+import json
 import os
+import re
 
 from dojo.models import Finding
 logger = logging.getLogger(__name__)
@@ -10,92 +12,64 @@ class TrailDiggerParser(object):
     """Parser for trail digger text files."""
     
     def get_scan_types(self):
-        return ["Trail Digger"]
+        return ["Trail Digger Scan"]
 
     def get_label_for_scan_types(self, scan_type):
-        return "Trail Digger"
+        return scan_type
 
     def get_description_for_scan_types(self, scan_type):
-        return "text report format"
+        return "Tool for digging trail log files of AWS CloudTrail - TXT Report"
 
     def get_findings(self, filename, test):
 
-        counter = 0
-        dictionary= {"Event Type": {},"Event Source":{},"Region":{}, "Recipient Account ID":{}}
-        # file = open(filename,'rb')
-        file=filename.readlines()[2:]
-        for f in file:
-            a=f.decode()
-            b=' '.join(a.split())
-            c=b.split(":")
-            print(c)
-            if c == [''] :
-                counter +=1
-                continue
-            if counter == 0:
-                dictionary["Event Type"][c[0]]=c[1]
-            elif counter ==1 :   
-                dictionary["Event Source"][c[0]]=c[1]
-            elif counter ==2 :
-                dictionary["Region"][c[0]]=c[1]
-            elif counter ==3 :
-                dictionary["Recipient Account ID"][c[0]]=c[1]
-            logger.debug(dictionary)
-            results = list()
-        # file = filename.readlines()
-        # logger.debug(file)
-        # warnings = file.split('\n\n')
-        # logger.debug(warnings)
-        # # next(file)
-        # # logger.debug(file)
-        # a=[line.strip() for line in file if line.strip()]
-        # for line in a :
-        #     b=' '.join(line.split())
-        #     c=b.split(":")
-                
-            findingdetail = "\n".join(
-                [
-                   str(dictionary["Event Type"]),
-                   str(dictionary["Event Source"]),
-                   str(dictionary["Recipient Account ID"]),
-                   str(dictionary["Region"])
-                ]
-            )
+        # Parse txt file into dictionary 
+        report_file = filename.readlines()[2:]
+        output = {}
+        resource_type = []
+        previous_key = None
+        for line in report_file:
+            line = line.decode().strip()
+            tmp = line.replace('  ', '|')
+            row = re.sub(r'\|{2,}', '|', tmp).split(sep='|')
 
-            finding = Finding(
-                title="Log data info",
-                test=test,
-                # tags = account_id,
-                description=findingdetail,
-                # references = str(item["_source"]["event"]["original"]),
-                # severity=item["issue_severity"].title(),
-                severity="Info",
-                # file_path=item["_source"]["log"]["file"]["path"],
-                # line=item["line_number"],
-                # date=find_date,
-                static_finding=True,
-                dynamic_finding=False,
-                # vuln_id_from_tool=":".join([item["test_name"], item["test_id"]]),
-                nb_occurences=1,
-            )
-            # manage confidence
-            # confidence = self.convert_confidence(item.get("issue_confidence"))
-            # if confidence:
-            #     finding.scanner_confidence = confidence
-            # if "more_info" in item:
-            #     finding.references = item["more_info"]
+            if row.__len__() == 1:
+                resource_type = []
 
-            results.append(finding)
+            elif row.__len__() == 3:
+                key = row[0]
+                previous_key = key
+                resource_type.append({
+                    "resource": row[1].strip()[:-1],
+                    "count": row[2].strip()
+                })
+                output[key] = resource_type
+
+            elif row.__len__() == 2:
+                key = previous_key
+                resource_type.append({
+                    "resource": row[0].strip()[:-1],
+                    "count": row[1].strip()
+                })
+                output[key] = resource_type
+            
+            else:
+                raise Exception('Algorithm breaks due to non-standard report pattern')
+
+
+        # Import findings to defect-dojo
+        results = []
+        description = json.dumps(output)
+
+        finding = Finding(
+            title="AWS CloudTrail Digger Info",
+            test=test,
+            description=description,
+            severity = "Info",
+            static_finding = True,
+            dynamic_finding = False,
+            nb_occurences = 1,
+        )
+
+        results.append(finding)
 
         return results
-
-    # def convert_confidence(self, value):
-    #     if "high" == value.lower():
-    #         return 2
-    #     elif "medium" == value.lower():
-    #         return 3
-    #     elif "low" == value.lower():
-    #         return 6
-    #     else:
-    #         return None
-
