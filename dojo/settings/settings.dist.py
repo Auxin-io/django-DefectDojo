@@ -1100,6 +1100,7 @@ HASHCODE_FIELDS_PER_SCANNER = {
     'AWS NIST Scan' : ['title', 'description'],
     'AWS SOC2 Scan' : ['title', 'description'],
     'AWS PCI Scan' : ['title', 'description'],
+    'AWS AFS Scan' : ['title', 'description'],
 
 ##################################################################################################
 ################################## CUSTOM CHANGES OUR PARSERS ####################################
@@ -1190,6 +1191,7 @@ HASHCODE_ALLOWS_NULL_CWE = {
     'AWS NIST Scan': True,
     'AWS SOC2 Scan': True,
     'AWS PCI Scan': True,
+    'AWS AFS Scan': True,
 
 
 ##################################################################################################
@@ -1279,6 +1281,7 @@ DEDUPLICATION_ALGORITHM_PER_PARSER = {
     'AWS NIST Scan': DEDUPE_ALGO_HASH_CODE,
     'AWS SOC2 Scan': DEDUPE_ALGO_HASH_CODE,
     'AWS PCI Scan': DEDUPE_ALGO_HASH_CODE,
+    'AWS AFS Scan': DEDUPE_ALGO_HASH_CODE,
 
 
 ##################################################################################################
