@@ -1102,6 +1102,7 @@ HASHCODE_FIELDS_PER_SCANNER = {
     'AWS SOC2 Scan' : ['title', 'description'],
     'AWS PCI Scan' : ['title', 'description'],
     'AWS ACS Scan' : ['title', 'description'],
+    'Azure CIS Scan' : ['title', 'description'],
 
 ##################################################################################################
 ################################## CUSTOM CHANGES OUR PARSERS ####################################
@@ -1194,6 +1195,8 @@ HASHCODE_ALLOWS_NULL_CWE = {
     'AWS SOC2 Scan': True,
     'AWS PCI Scan': True,
     'AWS ACS Scan': True,
+    'Azure CIS Scan' : True,
+
 
 
 ##################################################################################################
@@ -1285,7 +1288,7 @@ DEDUPLICATION_ALGORITHM_PER_PARSER = {
     'AWS SOC2 Scan': DEDUPE_ALGO_HASH_CODE,
     'AWS PCI Scan': DEDUPE_ALGO_HASH_CODE,
     'AWS ACS Scan': DEDUPE_ALGO_HASH_CODE,
-
+    'Azure CIS Scan': DEDUPE_ALGO_HASH_CODE, 
 
 ##################################################################################################
 ################################## CUSTOM CHANGES OUR PARSERS ####################################
