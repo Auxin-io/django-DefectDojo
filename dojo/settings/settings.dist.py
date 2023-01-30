@@ -1096,6 +1096,7 @@ HASHCODE_FIELDS_PER_SCANNER = {
 
     'Log Analyzer' : ['title','description','file_path'],
     'Trail Digger Scan' : ['title', 'description'],
+    'Insider Scan' : ['title', 'description', 'file_path'],
     'AWS CIS Scan' : ['title', 'description'],
     'AWS HIPAA Scan' : ['title', 'description'],
     'AWS NIST Scan' : ['title', 'description'],
@@ -1190,6 +1191,7 @@ HASHCODE_ALLOWS_NULL_CWE = {
     'Scout Suite Scan': True,
     'Log Analyzer' : True,
     'Trail Digger Scan': True,
+    'Insider Scan' : True,
     'AWS CIS Scan': True,
     'AWS HIPAA Scan': True,
     'AWS NIST Scan': True,
@@ -1284,6 +1286,7 @@ DEDUPLICATION_ALGORITHM_PER_PARSER = {
     'Scout Suite Scan': DEDUPE_ALGO_HASH_CODE,
     'Log Analyzer': DEDUPE_ALGO_HASH_CODE,
     'Trail Digger Scan': DEDUPE_ALGO_HASH_CODE,
+    'Insider Scan': DEDUPE_ALGO_HASH_CODE,
     'AWS CIS Scan': DEDUPE_ALGO_HASH_CODE,
     'AWS HIPAA Scan': DEDUPE_ALGO_HASH_CODE,
     'AWS NIST Scan': DEDUPE_ALGO_HASH_CODE,
