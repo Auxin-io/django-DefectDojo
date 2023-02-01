@@ -1,5 +1,4 @@
 import json
-import dateutil.parser
 
 from dojo.models import Finding
 
@@ -54,7 +53,13 @@ class InsiderParser(object):
                 line = vuln_line,
                 cwe = cwe,
                 vuln_id_from_tool = vuln_id,
-                mitigation = vuln_recommendation
+                mitigation = vuln_recommendation,
+                active=True,
+                dynamic_finding=False,
+                static_finding=True,
+                false_p=False,
+                out_of_scope=False,
+                nb_occurences=1
             )
             results.append(finding)
 
