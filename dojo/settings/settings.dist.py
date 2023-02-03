@@ -1107,7 +1107,8 @@ HASHCODE_FIELDS_PER_SCANNER = {
     'Azure CIS Scan' : ['title', 'description'],
     'Azure NIST Scan' : ['title', 'description'],
     'Azure Hipaa Scan' : ['title', 'description'],
-
+    'GCP CIS Scan': ['title', 'description'],
+    'GCP CFT Scan':['title', 'description'],
 ##################################################################################################
 ################################## CUSTOM CHANGES OUR PARSERS ####################################
 ##################################################################################################
@@ -1204,6 +1205,8 @@ HASHCODE_ALLOWS_NULL_CWE = {
     'Azure CIS Scan' : True,
     'Azure NIST Scan' : True,
     'Azure Hipaa Scan' : True,
+    'GCP CIS Scan': True,
+    'GCP CFT Scan': True,
 
 
 
@@ -1300,7 +1303,9 @@ DEDUPLICATION_ALGORITHM_PER_PARSER = {
     'AWS ACS Scan': DEDUPE_ALGO_HASH_CODE,
     'Azure CIS Scan': DEDUPE_ALGO_HASH_CODE, 
     'Azure NIST Scan': DEDUPE_ALGO_HASH_CODE, 
-    'Azure Hipaa Scan': DEDUPE_ALGO_HASH_CODE, 
+    'Azure Hipaa Scan': DEDUPE_ALGO_HASH_CODE,
+    'GCP CIS Scan' : DEDUPE_ALGO_HASH_CODE,
+    'GCP CFT Scan' : DEDUPE_ALGO_HASH_CODE,
 
 
 ##################################################################################################
