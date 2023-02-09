@@ -48,8 +48,8 @@ class GCPCFTParser(object):
                 result['severity']='High'
 
             resource = result['resource']
-            reference = "**Benchmark:** " +result['title'] + "\n" + result['description']
-
+            # reference = "**Benchmark:** " +result['title'] + "\n" + result['description']
+            reference = result['title']
             findings = Finding(
                 test=test,
                 title = result["control_title"],
