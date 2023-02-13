@@ -44,7 +44,7 @@ class GCPCFTParser(object):
                     'title': row.get('title', '')
                     
                 }
-            if result['severity'].strip() == '':
+            if result.get('severity') is None or result['severity'].strip() == '':
                 result['severity']='High'
 
             resource = result['resource']
