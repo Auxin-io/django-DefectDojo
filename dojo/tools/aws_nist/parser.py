@@ -46,7 +46,7 @@ class AWSNISTParser(object):
                 result['severity'] = 'Info'
 
             resource = result['resource']
-            # reference = "**Benchmark:** " + result['title'] + "\n" + result['description']
+            reference = "**Benchmark:** " + result['title'] + "\n" + result['description']
             try: 
                 findings = Finding(
                     test = test,
@@ -61,7 +61,7 @@ class AWSNISTParser(object):
                                 "**Control Id:** " + result['control_id'],
 
                     severity = result['severity'],
-                    # references = reference
+                    references = reference
                 )
                 
                 results.append(findings)

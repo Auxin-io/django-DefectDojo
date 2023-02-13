@@ -50,26 +50,28 @@ class GCPCISParser(object):
             resource = result['resource']
             reference = "**Benchmark:** " + result['benchmark'] + "\n" + \
                                             result['title'] + "\n" + result['description']
+            try:
+                findings = Finding(
+                    test=test,
+                    title = result["control_title"],
+                    description = "**Project:** " + result['project'] + "\n" + \
+                                "**Project ID:** " + result['project_id'] + "\n" + \
+                                "**Service:** " + result['service'] + "\n" + \
+                                "**Resource:** " + resource + "\n" + \
+                                "**Details:** " + result['control_description']+ "\n" + \
+                                "**Reason:** " + result['reason'] + "\n" + \
+                                "**Status:** " + result['status'] + "\n" + \
+                                "**Control Id:** " + result['control_id'],
 
-            findings = Finding(
-                test=test,
-                title = result["control_title"],
-                description = "**Project:** " + result['project'] + "\n" + \
-                            "**Project ID:** " + result['project_id'] + "\n" + \
-                            "**Service:** " + result['service'] + "\n" + \
-                            "**Resource:** " + resource + "\n" + \
-                            "**Details:** " + result['control_description']+ "\n" + \
-                            "**Reason:** " + result['reason'] + "\n" + \
-                            "**Status:** " + result['status'] + "\n" + \
-                            "**Control Id:** " + result['control_id'],
+                    severity = result['severity'],
+                    references = reference
+                    # cwe = result['control_id'],
+                    # finding.notes.add(result['reason'])
+                    # mitigation = result['status'],
+                )
 
-                severity = result['severity'],
-                references = reference
-                # cwe = result['control_id'],
-                # finding.notes.add(result['reason'])
-                # mitigation = result['status'],
-            )
-
-            results.append(findings)
+                results.append(findings)
+            except:
+                continue
            
         return results
