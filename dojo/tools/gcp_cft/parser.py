@@ -36,7 +36,7 @@ class GCPCFTParser(object):
                     'reason': row.get('reason', ''),
                     'resource': row.get('resource', ''),
                     'status': row.get('status', ''),
-                    'severity': row.get('severity', '').capitalize(),
+                    'severity': row.get('severity', ''),
                     'location': row.get('location', ''),
                     'project': row.get('project', ''),
                     'project_id' : row.get('project_id',''),
