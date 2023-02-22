@@ -1095,6 +1095,7 @@ HASHCODE_FIELDS_PER_SCANNER = {
     
 
     'Log Analyzer' : ['title','description','file_path'],
+    'Azure Log Analyzer' : ['title','description','file_path'],
     'Trail Digger Scan' : ['title', 'description'],
     'Insider Scan' : ['title', 'description', 'file_path'],
     'CppCheck Scan' : ['title', 'description', 'file_path'],
@@ -1193,6 +1194,7 @@ HASHCODE_ALLOWS_NULL_CWE = {
     'ZAP Scan': False,
     'Scout Suite Scan': True,
     'Log Analyzer' : True,
+    'Azure Log Analyzer' : True,
     'Trail Digger Scan': True,
     'Insider Scan' : True,
     'CppCheck Scan' : True,
@@ -1292,6 +1294,7 @@ DEDUPLICATION_ALGORITHM_PER_PARSER = {
     'TFSec Scan': DEDUPE_ALGO_HASH_CODE,
     'Scout Suite Scan': DEDUPE_ALGO_HASH_CODE,
     'Log Analyzer': DEDUPE_ALGO_HASH_CODE,
+    'Azure Log Analyzer': DEDUPE_ALGO_HASH_CODE,
     'Trail Digger Scan': DEDUPE_ALGO_HASH_CODE,
     'Insider Scan': DEDUPE_ALGO_HASH_CODE,
     'CppCheck Scan': DEDUPE_ALGO_HASH_CODE,
