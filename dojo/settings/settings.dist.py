@@ -188,7 +188,7 @@ env = environ.Env(
     # when enabled in sytem settings,  every minute a job run to delete excess duplicates
     # we limit the amount of duplicates that can be deleted in a single run of that job
     # to prevent overlapping runs of that job from occurrring
-    DD_DUPE_DELETE_MAX_PER_RUN=(int, 200),
+    DD_DUPE_DELETE_MAX_PER_RUN=(int, 100),
     # when enabled 'mitigated date' and 'mitigated by' of a finding become editable
     DD_EDITABLE_MITIGATED_DATA=(bool, False),
     # new feature that tracks history across multiple reimports for the same test
@@ -217,12 +217,12 @@ env = environ.Env(
     # when enabled, finding importing will occur asynchronously, default False
     DD_ASYNC_FINDING_IMPORT=(bool, True),
     # The number of findings to be processed per celeryworker
-    DD_ASYNC_FINDING_IMPORT_CHUNK_SIZE=(int, 100),
+    DD_ASYNC_FINDING_IMPORT_CHUNK_SIZE=(int, 200),
     # When enabled, deleting objects will be occur from the bottom up. In the example of deleting an engagement
     # The objects will be deleted as follows Endpoints -> Findings -> Tests -> Engagement
     DD_ASYNC_OBJECT_DELETE=(bool, True),
     # The number of objects to be deleted per celeryworker
-    DD_ASYNC_OBEJECT_DELETE_CHUNK_SIZE=(int, 100),
+    DD_ASYNC_OBEJECT_DELETE_CHUNK_SIZE=(int, 200),
     # When enabled, display the preview of objects to be deleted. This can take a long time to render
     # for very large objects
     DD_DELETE_PREVIEW=(bool, True),
