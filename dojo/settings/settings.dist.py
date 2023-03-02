@@ -1096,6 +1096,7 @@ HASHCODE_FIELDS_PER_SCANNER = {
 
     'Log Analyzer' : ['title','description','file_path'],
     'Azure Log Analyzer' : ['title','description','file_path'],
+    'GCP Log Analyzer' : ['title','description','file_path'],
     'Trail Digger Scan' : ['title', 'description'],
     'Insider Scan' : ['title', 'description', 'file_path'],
     'CppCheck Scan' : ['title', 'description', 'file_path'],
@@ -1176,7 +1177,7 @@ HASHCODE_FIELDS_PER_SCANNER = {
     'Veracode SourceClear Scan': ['title', 'vulnerability_ids', 'component_name', 'component_version'],
     'Twistlock Image Scan': ['title', 'severity', 'component_name', 'component_version'],
     
-    
+
 }
 
 # This tells if we should accept cwe=0 when computing hash_code with a configurable list of fields from HASHCODE_FIELDS_PER_SCANNER (this setting doesn't apply to legacy algorithm)
@@ -1195,6 +1196,7 @@ HASHCODE_ALLOWS_NULL_CWE = {
     'Scout Suite Scan': True,
     'Log Analyzer' : True,
     'Azure Log Analyzer' : True,
+    'GCP Log Analyzer' : True,
     'Trail Digger Scan': True,
     'Insider Scan' : True,
     'CppCheck Scan' : True,
@@ -1295,6 +1297,7 @@ DEDUPLICATION_ALGORITHM_PER_PARSER = {
     'Scout Suite Scan': DEDUPE_ALGO_HASH_CODE,
     'Log Analyzer': DEDUPE_ALGO_HASH_CODE,
     'Azure Log Analyzer': DEDUPE_ALGO_HASH_CODE,
+    'GCP Log Analyzer': DEDUPE_ALGO_HASH_CODE,
     'Trail Digger Scan': DEDUPE_ALGO_HASH_CODE,
     'Insider Scan': DEDUPE_ALGO_HASH_CODE,
     'CppCheck Scan': DEDUPE_ALGO_HASH_CODE,
