@@ -25,19 +25,6 @@ class LogsCountParser(object):
 
         # get the total value
         hit_value = report["hits"]["total"]["value"]
-
-        # add condition to extract platform tags
-        platform =  report["alert_platform"]
-        
-        if platform == "AWS":
-            platform_tag = report["hits"]["hits"][0]["_source"]["aws"]["s3"]["bucket"]["name"]
-        elif platform == "Azure":
-            pass
-        elif platform == "GCP":
-            pass
-        else:
-            raise Exception(f'Invalid platform found: {platform}')
-
         output = {
             'hit_count': hit_value
         }
@@ -51,7 +38,6 @@ class LogsCountParser(object):
             dynamic_finding=False,
             nb_occurences=1,
         )
-        finding.unsaved_tags = [platform_tag]
         
         results.append(finding)
         return results
