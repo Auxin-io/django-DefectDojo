@@ -188,7 +188,7 @@ env = environ.Env(
     # when enabled in sytem settings,  every minute a job run to delete excess duplicates
     # we limit the amount of duplicates that can be deleted in a single run of that job
     # to prevent overlapping runs of that job from occurrring
-    DD_DUPE_DELETE_MAX_PER_RUN=(int, 100),
+    DD_DUPE_DELETE_MAX_PER_RUN=(int, 500),
     # when enabled 'mitigated date' and 'mitigated by' of a finding become editable
     DD_EDITABLE_MITIGATED_DATA=(bool, False),
     # new feature that tracks history across multiple reimports for the same test
@@ -1024,8 +1024,8 @@ CELERY_BEAT_SCHEDULE = {
     },
     'dedupe-delete': {
         'task': 'dojo.tasks.async_dupe_delete',
-        'schedule': timedelta(minutes=10),
-        'args': [timedelta(minutes=10)]
+        'schedule': timedelta(minutes=45),
+        'args': [timedelta(minutes=45)]
     },
     'update-findings-from-source-issues': {
         'task': 'dojo.tools.tool_issue_updater.update_findings_from_source_issues',
