@@ -1112,6 +1112,8 @@ HASHCODE_FIELDS_PER_SCANNER = {
     'Azure Hipaa Scan' : ['title', 'description'],
     'GCP CIS Scan': ['title', 'description'],
     'GCP CFT Scan':['title', 'description'],
+    'Kubernetes CIS Scan':['title', 'description'],
+    'Kubernetes NSA CISA Scan':['title', 'description'],
 ##################################################################################################
 ################################## CUSTOM CHANGES OUR PARSERS ####################################
 ##################################################################################################
@@ -1213,6 +1215,9 @@ HASHCODE_ALLOWS_NULL_CWE = {
     'Azure Hipaa Scan' : True,
     'GCP CIS Scan': True,
     'GCP CFT Scan': True,
+    'Kubernetes CIS Scan':True,
+    'Kubernetes NSA CISA Scan':True,
+
 
 
 
@@ -1315,6 +1320,9 @@ DEDUPLICATION_ALGORITHM_PER_PARSER = {
     'Azure Hipaa Scan': DEDUPE_ALGO_HASH_CODE,
     'GCP CIS Scan' : DEDUPE_ALGO_HASH_CODE,
     'GCP CFT Scan' : DEDUPE_ALGO_HASH_CODE,
+    'Kubernetes NSA CISA Scan':DEDUPE_ALGO_HASH_CODE,
+    'Kubernetes CIS Scan':DEDUPE_ALGO_HASH_CODE,
+
 
 
 ##################################################################################################
