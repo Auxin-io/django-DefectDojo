@@ -36,7 +36,7 @@ class BanditParser(object):
                     "```",
                 ]
             )
-
+            findingdetail = findingdetail.encode('utf-8').decode('unicode-escape')
             finding = Finding(
                 title=item["issue_text"],
                 test=test,
