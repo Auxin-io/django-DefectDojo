@@ -1114,6 +1114,7 @@ HASHCODE_FIELDS_PER_SCANNER = {
     'GCP CFT Scan':['title', 'description'],
     'Kubernetes CIS Scan':['title', 'description'],
     'Kubernetes NSA CISA Scan':['title', 'description'],
+    'Generic Findings Import' : ['title', 'description'],
 ##################################################################################################
 ################################## CUSTOM CHANGES OUR PARSERS ####################################
 ##################################################################################################
@@ -1322,7 +1323,7 @@ DEDUPLICATION_ALGORITHM_PER_PARSER = {
     'GCP CFT Scan' : DEDUPE_ALGO_HASH_CODE,
     'Kubernetes NSA CISA Scan':DEDUPE_ALGO_HASH_CODE,
     'Kubernetes CIS Scan':DEDUPE_ALGO_HASH_CODE,
-
+    'Generic Findings Import' :DEDUPE_ALGO_HASH_CODE,
 
 
 ##################################################################################################
