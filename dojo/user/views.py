@@ -16,6 +16,7 @@ from django.db.models.deletion import RestrictedError
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
+from dojo.utils import get_system_setting
 from django.utils.http import urlencode
 from django.utils.translation import gettext as _
 
@@ -164,10 +165,15 @@ def delete_alerts(request):
 def alerts_json(request, limit=None):
     limit = request.GET.get('limit')
     if limit:
-        alerts = serializers.serialize('json', Alerts.objects.filter(user_id=request.user)[:int(limit)])
+        alerts = Alerts.objects.filter(user_id=request.user)[:int(limit)]
     else:
-        alerts = serializers.serialize('json', Alerts.objects.filter(user_id=request.user))
-    return HttpResponse(alerts, content_type='application/json')
+        alerts = Alerts.objects.filter(user_id=request.user)
+
+    for alert in alerts:
+        alert.url = '/' + get_system_setting('url_prefix')[:-1] + alert.url
+    
+    user_alerts = serializers.serialize('json', alerts)
+    return HttpResponse(user_alerts, content_type='application/json')
 
 
 def alertcount(request):

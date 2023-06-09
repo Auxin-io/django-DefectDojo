@@ -56,6 +56,9 @@ services:
       DD_CELERY_BROKER_URL: ${DD_CELERY_BROKER_URL}
       DD_SECRET_KEY: "${DD_SECRET_KEY:-hhZCp@D28z!n@NED*yB!ROMt+WzsY*iq}"
       DD_CREDENTIAL_AES_256_KEY: "${DD_CREDENTIAL_AES_256_KEY:-&91a*agLqesc*0DJ+2*bAbsUZfR*4nLw}"
+      DD_LOGIN_REDIRECT_URL: '/tools/defect-dojo'
+      DD_LOGIN_URL: '/tools/defect-dojo/login'
+      DD_STATIC_URL: '/tools/defect-dojo/static/'
     volumes:
         - type: bind
           source: ./docker/extra_settings
@@ -78,6 +81,9 @@ services:
       DD_CELERY_BROKER_URL: ${DD_CELERY_BROKER_URL}
       DD_SECRET_KEY: "${DD_SECRET_KEY:-hhZCp@D28z!n@NED*yB!ROMt+WzsY*iq}"
       DD_CREDENTIAL_AES_256_KEY: "${DD_CREDENTIAL_AES_256_KEY:-&91a*agLqesc*0DJ+2*bAbsUZfR*4nLw}"
+      DD_LOGIN_REDIRECT_URL: '/tools/defect-dojo'
+      DD_LOGIN_URL: '/tools/defect-dojo/login'
+      DD_STATIC_URL: '/tools/defect-dojo/static/'
     volumes:
         - type: bind
           source: ./docker/extra_settings
@@ -100,6 +106,9 @@ services:
       DD_CELERY_BROKER_URL: ${DD_CELERY_BROKER_URL}
       DD_SECRET_KEY: "${DD_SECRET_KEY:-hhZCp@D28z!n@NED*yB!ROMt+WzsY*iq}"
       DD_CREDENTIAL_AES_256_KEY: "${DD_CREDENTIAL_AES_256_KEY:-&91a*agLqesc*0DJ+2*bAbsUZfR*4nLw}"
+      DD_LOGIN_REDIRECT_URL: '/tools/defect-dojo'
+      DD_LOGIN_URL: '/tools/defect-dojo/login'
+      DD_STATIC_URL: '/tools/defect-dojo/static/'
     volumes:
         - type: bind
           source: ./docker/extra_settings

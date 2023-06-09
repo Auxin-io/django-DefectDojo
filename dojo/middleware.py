@@ -30,6 +30,26 @@ class LoginRequiredMiddleware:
 
         self.get_response = get_response
 
+    def check_api_key_only(self, request):
+        from dojo.models import Dojo_User
+        from rest_framework.test import force_authenticate
+        from rest_framework.authtoken.models import Token
+        try:
+            auth_token = [k for k in request.headers['Authorization'].split(' ') if k]
+            if auth_token[0] != 'Token':
+                raise KeyError
+        except:
+            return
+        
+        try:
+            api_key = auth_token[1]
+            token = Token.objects.get(pk=api_key)
+            user = Dojo_User.objects.get(id=token.user_id)
+            force_authenticate(request, user=user)
+            request.user = user
+        except Token.DoesNotExist as e:
+            return 
+
     def __call__(self, request):
         assert hasattr(request, 'user'), "The Login Required middleware\
  requires authentication middleware to be installed. Edit your\
@@ -37,6 +57,20 @@ class LoginRequiredMiddleware:
  'django.contrib.auth.middleware.AuthenticationMiddleware'. If that doesn't\
  work, ensure your TEMPLATE_CONTEXT_PROCESSORS setting includes\
  'django.core.context_processors.auth'."
+
+        from dojo.utils import get_system_setting
+
+        url_prefix = get_system_setting('url_prefix')
+        formated_path = f'/{url_prefix}api/v2/'
+        cookie = request.COOKIES.get('sessionid')
+        api_key = request.headers.get('Authorization')
+        if request.path.startswith(formated_path) and cookie is None and api_key is not None:
+            # print('... Processing request.path  : ', request.path)
+            # print('... Processing request.cookie: ', cookie)
+            # print('... Processing request.apiKey: ', api_key)
+            self.check_api_key_only(request)
+
+
         if not request.user.is_authenticated:
             path = request.path_info.lstrip('/')
             if not any(m.match(path) for m in EXEMPT_URLS):

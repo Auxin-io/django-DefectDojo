@@ -148,6 +148,7 @@ ur += google_sheets_urls
 ur += banner_urls
 ur += component_urls
 ur += regulations
+ur += survey_urls
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -176,7 +177,7 @@ urlpatterns = [
 
     # drf-spectacular = OpenAPI3
     url(r'^%sapi/v2/oa3/schema/' % get_system_setting('url_prefix'), SpectacularAPIView.as_view(), name='schema_oa3'),
-    url(r'^%sapi/v2/oa3/swagger-ui/' % get_system_setting('url_prefix'), SpectacularSwaggerView.as_view(url=get_system_setting('url_prefix') + '/api/v2/oa3/schema/?format=json'), name='swagger-ui_oa3'),
+    url(r'^%sapi/v2/oa3/swagger-ui/' % get_system_setting('url_prefix'), SpectacularSwaggerView.as_view(url=get_system_setting('url_prefix') + 'api/v2/oa3/schema/?format=json'), name='swagger-ui_oa3'),
 
     url(r'^robots.txt', lambda x: HttpResponse("User-Agent: *\nDisallow: /", content_type="text/plain"), name="robots_file"),
     url(r'^manage_files/(?P<oid>\d+)/(?P<obj_type>\w+)$', views.manage_files, name='manage_files'),
@@ -184,7 +185,7 @@ urlpatterns = [
     url(r'^%s/(?P<path>.*)$' % settings.MEDIA_URL.strip('/'), views.protected_serve, {'document_root': settings.MEDIA_ROOT})
 ]
 
-urlpatterns += survey_urls
+# urlpatterns += survey_urls
 
 if hasattr(settings, 'DJANGO_METRICS_ENABLED'):
     if settings.DJANGO_METRICS_ENABLED:
@@ -193,7 +194,7 @@ if hasattr(settings, 'DJANGO_METRICS_ENABLED'):
 if hasattr(settings, 'SAML2_ENABLED'):
     if settings.SAML2_ENABLED:
         # django saml2
-        urlpatterns += [url(r'^saml2/', include('djangosaml2.urls'))]
+        urlpatterns += [url(r'^%ssaml2/' % get_system_setting('url_prefix'), include('djangosaml2.urls'))]
 
 if hasattr(settings, 'DJANGO_ADMIN_ENABLED'):
     if settings.DJANGO_ADMIN_ENABLED:
