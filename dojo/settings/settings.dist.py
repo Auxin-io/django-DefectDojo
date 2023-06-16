@@ -1115,6 +1115,11 @@ HASHCODE_FIELDS_PER_SCANNER = {
     'Kubernetes CIS Scan':['title', 'description'],
     'Kubernetes NSA CISA Scan':['title', 'description'],
     'Generic Findings Import' : ['title', 'description'],
+    'AI SAST Scan' : ['title', 'description'],
+    'AI SECRETS Scan' : ['title', 'description'],
+    'AI IAC Scan' : ['title', 'description'],
+    'AI CONTAINER Scan' : ['title', 'description'],
+
 ##################################################################################################
 ################################## CUSTOM CHANGES OUR PARSERS ####################################
 ##################################################################################################
@@ -1218,9 +1223,10 @@ HASHCODE_ALLOWS_NULL_CWE = {
     'GCP CFT Scan': True,
     'Kubernetes CIS Scan':True,
     'Kubernetes NSA CISA Scan':True,
-
-
-
+    'AI SAST Scan' : True,
+    'AI SECRETS Scan' : True,
+    'AI IAC Scan' : True,
+    'AI CONTAINER Scan' : True,
 
 ##################################################################################################
 ################################## CUSTOM CHANGES OUR PARSERS ####################################
@@ -1324,6 +1330,10 @@ DEDUPLICATION_ALGORITHM_PER_PARSER = {
     'Kubernetes NSA CISA Scan':DEDUPE_ALGO_HASH_CODE,
     'Kubernetes CIS Scan':DEDUPE_ALGO_HASH_CODE,
     'Generic Findings Import' :DEDUPE_ALGO_HASH_CODE,
+    'AI SAST Scan' : DEDUPE_ALGO_HASH_CODE,
+    'AI SECRETS Scan' : DEDUPE_ALGO_HASH_CODE,
+    'AI IAC Scan' : DEDUPE_ALGO_HASH_CODE,
+    'AI CONTAINER Scan' : DEDUPE_ALGO_HASH_CODE,
 
 
 ##################################################################################################
