@@ -1120,6 +1120,7 @@ HASHCODE_FIELDS_PER_SCANNER = {
     'AI IAC Scan' : ['title', 'description'],
     'AI CONTAINER Scan' : ['title', 'description'],
     'AI KUBERNETES Scan' : ['title', 'description'],
+    'AI SCA Scan' : ['title', 'description'],
 
 ##################################################################################################
 ################################## CUSTOM CHANGES OUR PARSERS ####################################
@@ -1229,6 +1230,7 @@ HASHCODE_ALLOWS_NULL_CWE = {
     'AI IAC Scan' : True,
     'AI CONTAINER Scan' : True,
     'AI KUBERNETES Scan' : True,
+    'AI SCA Scan' : True,
 
 ##################################################################################################
 ################################## CUSTOM CHANGES OUR PARSERS ####################################
@@ -1337,6 +1339,7 @@ DEDUPLICATION_ALGORITHM_PER_PARSER = {
     'AI IAC Scan' : DEDUPE_ALGO_HASH_CODE,
     'AI CONTAINER Scan' : DEDUPE_ALGO_HASH_CODE,
     'AI KUBERNETES Scan' : DEDUPE_ALGO_HASH_CODE,
+    'AI SCA Scan' : DEDUPE_ALGO_HASH_CODE,
 
 
 ##################################################################################################
