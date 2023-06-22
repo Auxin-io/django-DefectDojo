@@ -1,0 +1,156 @@
+def isThisTagUpdate() {
+
+    // Get the variable from env variable
+    def inputBranchName = "${env.GIT_BRANCH}"
+    echo inputBranchName
+
+    // Tokenize the input
+    def (remoteName, tags, tagName) = inputBranchName.tokenize( '/' )
+
+    // Get the Tag name
+    echo remoteName
+    echo tags
+
+    return tags == 'tags'
+}
+
+pipeline  {
+    environment   {
+
+        // these should be parameters to the job
+        // the default value can be set using parameters
+        AWS_ACCOUNT_ID="${AWS_ACCOUNT_ID}"
+        AWS_DEFAULT_REGION="${AWS_DEFAULT_REGION}"
+        IMAGE_REPO_NAME="${IMAGE_REPO_NAME}"
+        registryCredential="${registryCredential}"
+
+        // Build the registry
+        registry = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${IMAGE_REPO_NAME}"
+
+        // Docker image used for pushing
+        dockerImageDDnginx = ''
+        dockerImageDDdjango = ''
+        dockerImagemysql = ''
+        dockerImagerabbitmq = ''
+
+        // Conditonal Dynamic variables
+        // BranchName = getBranchName()
+        // TagName    = getTagName()
+        IsThisTagUpdate = isThisTagUpdate()
+        
+        // Get Current Time
+        // https://www.thiscodeworks.com/current-date-at-pipeline-method-1-variable-groovy-jenkins-pipeline/610bc8aef724050014f7d22f
+        currentDate = sh(returnStdout: true, script: 'date --utc +%Y-%m-%d-%H-%M-%S').trim()
+    }
+
+    /*
+     * Usefule reference links:
+     * https://stackoverflow.com/questions/44330148/run-bash-command-on-jenkins-pipeline
+     * https://stackoverflow.com/questions/48762111/how-to-detect-jenkins-multibranch-branch-or-tag
+     */
+
+    // Build on any stage
+    agent any
+
+    // stages
+    stages {
+
+        // Build Docker stage
+        stage('Build Image') {
+            steps{
+            
+                // Groovy or shell code must go inside script tags
+                script {
+                    sh '''
+                    echo "Hello, World!"
+                    ls -la
+                    ./dc-build.sh
+                    # ...
+                    '''
+                    
+                    
+                    
+                    //Build a dockerfile based on args and define them in variable for development
+                    // we are passing latest version for development with current date
+                    def buildOptionselasticsearch = """\
+                         -f elasticsearch/Dockerfile \
+                         ."""    
+
+                    // Echo some sanity value
+                    echo "is this is a tag build: ${env.IsThisTagUpdate}"
+
+                    // define a variable
+                    def isThisTagBuild = "${env.IsThisTagUpdate}"
+                    echo isThisTagBuild
+
+                    if ( isThisTagBuild == "true" ){
+                        // Print out the Tag Build
+                        echo "We are building a Tag Build"
+
+                        //print git commiter name
+                        sh "echo 'The commiter name is $GIT_COMMITTER_NAME'"
+
+                        // Get the tag name
+                        def inputBranchName = "${env.GIT_BRANCH}"
+                        echo inputBranchName
+
+                        // Tokenize the input
+                        def (remoteName, tags, tagName) = inputBranchName.tokenize( '/' )
+                        echo tagName
+                        
+                        //Build a dockerfile based on args and define them in variable for Production
+                       //we are passing the git tag version and current date
+                        def buildOptionselasticsearchtag = """\
+                            -f elasticsearch/Dockerfile \
+                            ."""  
+
+                        def buildOptionskibanatag = """\
+                            -f kibana/Dockerfile \
+                            ."""        
+
+                        def buildOptionslogstashtag = """\
+                            -f logstash/Dockerfile \
+                            ."""
+
+                        def buildOptionsSetuptag = """\
+                            -f setup/Dockerfile \
+                            ."""    
+                        // make the image using base tag name
+                        dockerImageDDnginx = docker.build(registry + ":elasticsearch" + "_$tagName", buildOptionselasticsearchtag)
+                        dockerImageDDdjango = docker.build(registry + ":kibana" + "_$tagName", buildOptionskibanatag)
+                        dockerImagemysql = docker.build(registry + ":logstash" + "_$tagName", buildOptionslogstashtag)
+                        dockerImagerabbitmq = docker.build(registry + ":setup" + "_$tagName", buildOptionsSetuptag)
+                    }
+                    else{
+                        echo "We are building a non tag build"
+
+                        //print git commiter name
+                        sh "echo 'Hello from main $GIT_COMMITTER_NAME'"                     
+                        
+                        // make the image using base job name
+                        dockerImageDDnginx = docker.build(registry + ":elasticsearch", buildOptionselasticsearch)
+                        dockerImageDDdjango = docker.build(registry + ":kibana", buildOptionskibana)
+                        dockerImagemysql = docker.build(registry + ":logstash", buildOptionslogstash)
+                        dockerImagerabbitmq = docker.build(registry + ":setup", buildOptionsSetup)
+                    }
+                }
+            }
+        }
+
+        // Stage to publish to ECR
+        stage('Publish to ECR') {
+            steps{
+
+                // Groovy or shell code must go inside script tags
+                script {
+                    docker.withRegistry("https://" + registry, "ecr:us-east-1:" + registryCredential) {
+                    dockerImageDDnginx.push()
+                    dockerImageDDdjango.push()
+                    dockerImagemysql.push()
+                    dockerImagesetup.push()
+                    }
+                }
+            }
+        }
+    }
+}
