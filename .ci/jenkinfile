@@ -104,8 +104,8 @@ pipeline  {
                        //we are passing the git tag version and current date
  
                         // make the image using base tag name
-                        dockerImageDDnginx = docker.build(registry + ":elasticsearch" + "_$tagName", buildOptionsDDnginxtag)
-                        dockerImageDDdjango = docker.build(registry + ":kibana" + "_$tagName", buildOptionsDDdjangotag)
+                        dockerImageDDnginx = docker.build(registry + ":DDnginx" + "_$tagName", buildOptionsDDnginxtag)
+                        dockerImageDDdjango = docker.build(registry + ":DDdjango" + "_$tagName", buildOptionsDDdjangotag)
                     }
                     else{
                         echo "We are building a non tag build"
@@ -114,8 +114,8 @@ pipeline  {
                         sh "echo 'Hello from main $GIT_COMMITTER_NAME'"                     
                         
                         // make the image using base job name
-                        dockerImageDDnginx = docker.build(registry + ":elasticsearch", buildOptionsDDnginx)
-                        dockerImageDDdjango = docker.build(registry + ":kibana", buildOptionsDDdjango)
+                        dockerImageDDnginx = docker.build(registry + ":DDnginx", buildOptionsDDnginx)
+                        dockerImageDDdjango = docker.build(registry + ":DDdjango", buildOptionsDDdjango)
                     }
                 }
             }
