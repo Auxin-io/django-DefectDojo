@@ -61,18 +61,6 @@ pipeline  {
             
                 // Groovy or shell code must go inside script tags
                 script {
-                    sh '''
-                    
-                    // apt update -y
-                    // apt upgrade -y
-                    // curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-                    // chmod +x /usr/local/bin/docker-compose
-                    // docker-compose --version
-                    // echo "Hello, World!"
-                    // ls -la
-                    // ./dc-build.sh
-                    // # ...
-                    // '''
 
                     def buildOptionsDDdjango = """\
                        -f Dockerfile.django \
