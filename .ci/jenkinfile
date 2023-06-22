@@ -74,14 +74,6 @@ pipeline  {
                     # ...
                     '''
                     
-                    
-                    
-                    //Build a dockerfile based on args and define them in variable for development
-                    // we are passing latest version for development with current date
-                    def buildOptionselasticsearch = """\
-                         -f elasticsearch/Dockerfile \
-                         ."""    
-
                     // Echo some sanity value
                     echo "is this is a tag build: ${env.IsThisTagUpdate}"
 
@@ -104,23 +96,6 @@ pipeline  {
                         def (remoteName, tags, tagName) = inputBranchName.tokenize( '/' )
                         echo tagName
                         
-                        //Build a dockerfile based on args and define them in variable for Production
-                       //we are passing the git tag version and current date
-                        def buildOptionselasticsearchtag = """\
-                            -f elasticsearch/Dockerfile \
-                            ."""  
-
-                        def buildOptionskibanatag = """\
-                            -f kibana/Dockerfile \
-                            ."""        
-
-                        def buildOptionslogstashtag = """\
-                            -f logstash/Dockerfile \
-                            ."""
-
-                        def buildOptionsSetuptag = """\
-                            -f setup/Dockerfile \
-                            ."""    
                         // make the image using base tag name
                         dockerImageDDnginx = docker.build(registry + ":elasticsearch" + "_$tagName", buildOptionselasticsearchtag)
                         dockerImageDDdjango = docker.build(registry + ":kibana" + "_$tagName", buildOptionskibanatag)
@@ -133,11 +108,11 @@ pipeline  {
                         //print git commiter name
                         sh "echo 'Hello from main $GIT_COMMITTER_NAME'"                     
                         
-                        // make the image using base job name
-                        dockerImageDDnginx = docker.build(registry + ":elasticsearch", buildOptionselasticsearch)
-                        dockerImageDDdjango = docker.build(registry + ":kibana", buildOptionskibana)
-                        dockerImagemysql = docker.build(registry + ":logstash", buildOptionslogstash)
-                        dockerImagerabbitmq = docker.build(registry + ":setup", buildOptionsSetup)
+                        // // make the image using base job name
+                        // dockerImageDDnginx = docker.build(registry + ":elasticsearch", buildOptionselasticsearch)
+                        // dockerImageDDdjango = docker.build(registry + ":kibana", buildOptionskibana)
+                        // dockerImagemysql = docker.build(registry + ":logstash", buildOptionslogstash)
+                        // dockerImagerabbitmq = docker.build(registry + ":setup", buildOptionsSetup)
                     }
                 }
             }
@@ -150,10 +125,10 @@ pipeline  {
                 // Groovy or shell code must go inside script tags
                 script {
                     docker.withRegistry("https://" + registry, "ecr:us-east-1:" + registryCredential) {
-                    dockerImageDDnginx.push()
-                    dockerImageDDdjango.push()
+                    dockerImageDDnginx.push(defectdojo/defectdojo-nginx)
+                    dockerImageDDdjango.push(defectdojo/defectdojo-django)
                     dockerImagemysql.push()
-                    dockerImagesetup.push()
+                    dockerImagerabbitmq.push()
                     }
                 }
             }
