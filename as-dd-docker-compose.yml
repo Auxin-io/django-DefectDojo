@@ -1,12 +1,4 @@
-# This docker-compose.yml file  is fully functional to evaluate DefectDojo
-# in your local environment.
-#
-# Although Docker Compose is one of the supported installation methods to
-# deploy a containerized DefectDojo in a production environment, the
-# docker-compose.yml file is not intended for production use without first
-# customizing it to your particular situation.
----
-version: '3.8'
+version: '3'
 services:
   nginx:
     image: 672029928308.dkr.ecr.us-east-1.amazonaws.com/ecr-alphascale-tools:DDnginx
