@@ -135,7 +135,7 @@ pipeline  {
                         dockerImageDDnginx = docker.build(registry + ":DDnginx", buildOptionsDDnginx)
                         dockerImageDDdjango = docker.build(registry + ":DDdjango", buildOptionsDDdjango)
                         dockerImageDDmysql = docker.build(registry + ":DDmysql", buildOptionsDDmysql)
-                        dockerImageDDrabbitmq = docker.build(registry + ":rabbitmq", buildOptionsDDrabbitmq)
+                        dockerImageDDrabbitmq = docker.build(registry + ":DDrabbitmq", buildOptionsDDrabbitmq)
                     }
                 }
             }
