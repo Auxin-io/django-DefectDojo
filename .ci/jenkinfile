@@ -30,8 +30,8 @@ pipeline  {
         // Docker image used for pushing
         dockerImageDDnginx = ''
         dockerImageDDdjango = ''
-        dockerImagemysql = ''
-        dockerImagerabbitmq = ''
+        dockerImageDDmysql = ''
+        dockerImageDDrabbitmq = ''
 
         // Conditonal Dynamic variables
         // BranchName = getBranchName()
@@ -70,6 +70,14 @@ pipeline  {
                        -f Dockerfile.nginx \
                        ."""  
                     
+                    def buildOptionsDDmysqltag = """\
+                        -f Dockerfile.mysql \
+                        ."""  
+
+                    def buildOptionsDDrabbitmqtag = """\
+                        -f Dockerfile.rabbitmq \
+                        ."""  
+
                     // Echo some sanity value
                     echo "is this is a tag build: ${env.IsThisTagUpdate}"
 
@@ -92,6 +100,14 @@ pipeline  {
                         -f Dockerfile.nginx \
                         ."""  
 
+                        def buildOptionsDDmysqltag = """\
+                        -f Dockerfile.mysql \
+                        ."""  
+
+                        def buildOptionsDDrabbitmqtag = """\
+                        -f Dockerfile.rabbitmq \
+                        ."""  
+
                         // Get the tag name
                         def inputBranchName = "${env.GIT_BRANCH}"
                         echo inputBranchName
@@ -106,6 +122,8 @@ pipeline  {
                         // make the image using base tag name
                         dockerImageDDnginx = docker.build(registry + ":DDnginx" + "_$tagName", buildOptionsDDnginxtag)
                         dockerImageDDdjango = docker.build(registry + ":DDdjango" + "_$tagName", buildOptionsDDdjangotag)
+                        dockerImageDDmysql = docker.build(registry + ":DDmysql" + "_$tagName", buildOptionsDDmysqltag)
+                        dockerImageDDrabbitmq = docker.build(registry + ":DDrabbitmq" + "_$tagName", buildOptionsDDrabbitmqtag)
                     }
                     else{
                         echo "We are building a non tag build"
@@ -116,6 +134,8 @@ pipeline  {
                         // make the image using base job name
                         dockerImageDDnginx = docker.build(registry + ":DDnginx", buildOptionsDDnginx)
                         dockerImageDDdjango = docker.build(registry + ":DDdjango", buildOptionsDDdjango)
+                        dockerImageDDmysql = docker.build(registry + ":DDmysql", buildOptionsDDmysql)
+                        dockerImageDDrabbitmq = docker.build(registry + ":rabbitmq", buildOptionsDDrabbitmq)
                     }
                 }
             }
@@ -130,6 +150,8 @@ pipeline  {
                     docker.withRegistry("https://" + registry, "ecr:us-east-1:" + registryCredential) {
                     dockerImageDDnginx.push()
                     dockerImageDDdjango.push()
+                    dockerImageDDmysql.push()
+                    dockerImageDDrabbitmq.push()
                     }
                 }
             }
