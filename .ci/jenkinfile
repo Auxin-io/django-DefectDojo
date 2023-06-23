@@ -70,11 +70,11 @@ pipeline  {
                        -f Dockerfile.nginx \
                        ."""  
                     
-                    def buildOptionsDDmysqltag = """\
+                    def buildOptionsDDmysql = """\
                         -f Dockerfile.mysql \
                         ."""  
 
-                    def buildOptionsDDrabbitmqtag = """\
+                    def buildOptionsDDrabbitmq = """\
                         -f Dockerfile.rabbitmq \
                         ."""  
 
