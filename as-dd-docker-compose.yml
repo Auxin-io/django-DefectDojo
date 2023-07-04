@@ -7,14 +7,8 @@ services:
     volumes:
       - defectdojo_media:/usr/share/nginx/html/media
     ports:
-      - target: 8080
-        published: ${DD_PORT:-8080}
-        protocol: tcp
-        mode: host
-      - target: 8443
-        published: ${DD_TLS_PORT:-8443}
-        protocol: tcp
-        mode: host
+      - "8080:8080"
+      - "8443:8443"
   uwsgi:
     image: 672029928308.dkr.ecr.us-east-1.amazonaws.com/ecr-alphascale-tools:DDdjango
     entrypoint: ['/wait-for-it.sh', '${DD_DATABASE_HOST}:${DD_DATABASE_PORT}', '-t', '30', '--', '/entrypoint-uwsgi.sh']
@@ -30,9 +24,6 @@ services:
       DD_LOGIN_URL: '/tools/defect-dojo/login'
       DD_STATIC_URL: '/tools/defect-dojo/static/'
     volumes:
-        - type: bind
-          source: ./docker/extra_settings
-          target: /app/docker/extra_settings
         - "defectdojo_media:${DD_MEDIA_ROOT:-/app/media}"
   celerybeat:
     image: 672029928308.dkr.ecr.us-east-1.amazonaws.com/ecr-alphascale-tools:DDdjango
@@ -45,10 +36,6 @@ services:
       DD_LOGIN_REDIRECT_URL: '/tools/defect-dojo'
       DD_LOGIN_URL: '/tools/defect-dojo/login'
       DD_STATIC_URL: '/tools/defect-dojo/static/'
-    volumes:
-        - type: bind
-          source: ./docker/extra_settings
-          target: /app/docker/extra_settings
   celeryworker:
     image: 672029928308.dkr.ecr.us-east-1.amazonaws.com/ecr-alphascale-tools:DDdjango
     entrypoint: ['/wait-for-it.sh', '${DD_DATABASE_HOST}:${DD_DATABASE_PORT}', '-t', '30', '--', '/entrypoint-celery-worker.sh']
@@ -61,9 +48,6 @@ services:
       DD_LOGIN_URL: '/tools/defect-dojo/login'
       DD_STATIC_URL: '/tools/defect-dojo/static/'
     volumes:
-        - type: bind
-          source: ./docker/extra_settings
-          target: /app/docker/extra_settings
         - "defectdojo_media:${DD_MEDIA_ROOT:-/app/media}"
   initializer:
     image: 672029928308.dkr.ecr.us-east-1.amazonaws.com/ecr-alphascale-tools:DDdjango
@@ -77,10 +61,6 @@ services:
       DD_INITIALIZE: "${DD_INITIALIZE:-true}"
       DD_SECRET_KEY: "${DD_SECRET_KEY:-hhZCp@D28z!n@NED*yB!ROMt+WzsY*iq}"
       DD_CREDENTIAL_AES_256_KEY: "${DD_CREDENTIAL_AES_256_KEY:-&91a*agLqesc*0DJ+2*bAbsUZfR*4nLw}"
-    volumes:
-        - type: bind
-          source: ./docker/extra_settings
-          target: /app/docker/extra_settings
   mysql:
     image: 672029928308.dkr.ecr.us-east-1.amazonaws.com/ecr-alphascale-tools:DDmysql
     environment:
@@ -89,13 +69,7 @@ services:
       MYSQL_USER: ${DD_DATABASE_USER}
       MYSQL_PASSWORD: ${DD_DATABASE_PASSWORD}
     command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']
-    volumes:
-      - defectdojo_data:/var/lib/mysql
   rabbitmq:
     image: 672029928308.dkr.ecr.us-east-1.amazonaws.com/ecr-alphascale-tools:DDrabbitmq
-    volumes:
-       - defectdojo_rabbitmq:/var/lib/rabbitmq
 volumes:
-  defectdojo_data: {}
   defectdojo_media: {}
-  defectdojo_rabbitmq: {}
