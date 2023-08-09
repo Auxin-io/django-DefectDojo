@@ -13,8 +13,7 @@ root = environ.Path(__file__) - 3  # Three folders back
 # reference: https://pypi.org/project/django-environ/
 env = environ.Env(
     # Set casting and default values
-    DD_SITE_URL=(str, 'https://as-dev.auxin.cloud/'),
-    #'http://localhost:8080'),
+    DD_SITE_URL=(str, 'http://localhost:8080'),
     DD_DEBUG=(bool, False),
     DD_TEMPLATE_DEBUG=(bool, False),
     DD_LOG_LEVEL=(str, ''),
