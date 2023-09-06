@@ -89,6 +89,10 @@ RUN \
 ENV \
   DD_UWSGI_PASS="uwsgi_server" \
   DD_UWSGI_PORT="3031" \
+
+  # Use this variable for local development 
+  # DD_UWSGI_HOST="uwsgi" \
+  
   GENERATE_TLS_CERTIFICATE="false" \
   USE_TLS="false" \
   NGINX_METRICS_ENABLED="false" \
