@@ -39,7 +39,8 @@ class AWSThriftyParser(object):
             "redshift.csv",
             "route53.csv",
             "s3.csv",
-            "secretsmanager.csv"
+            "secretsmanager.csv",
+            "cloudwatch.csv"
         ]
 
         if str(filename) not in allowed_filenames:
