@@ -25,7 +25,7 @@ class AWSThriftyParser(object):
         allowed_filenames = [
             "cloudfront.csv",
             "cloudtrail.csv",
-            "costexplorer.csv",
+            "cost_explorer.csv",
             "dynamodb.csv",
             "ebs.csv",
             "ec2.csv",
