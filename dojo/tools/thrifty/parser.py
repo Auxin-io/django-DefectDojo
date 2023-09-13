@@ -7,40 +7,55 @@ __author__ = 'farooq'
 
 
 
-class AWSThriftyParser(object):
+class ThriftyParser(object):
 
     def get_scan_types(self):
-        return ["AWS Thrifty Scan"]
+        return ["Thrifty Scan"]
 
     def get_label_for_scan_types(self, scan_type):
         return scan_type
 
     def get_description_for_scan_types(self, scan_type):
-        return "Benchmark Reports for AWS Thrifty - CSV Report"
+        return "Benchmark Reports for Thrifty - CSV Report"
 
     def get_findings(self, filename, test):
         
         if filename is None:
             return list()
         allowed_filenames = [
-            "cloudfront.csv",
-            "cloudtrail.csv",
-            "cost_explorer.csv",
-            "dynamodb.csv",
-            "ebs.csv",
-            "ec2.csv",
-            "ecs.csv",
-            "eks.csv",
-            "elasticache.csv",
-            "emr.csv",
-            "lambda.csv",
-            "network.csv",
-            "rds.csv",
-            "redshift.csv",
-            "route53.csv",
-            "s3.csv",
-            "secretsmanager.csv",
-            "cloudwatch.csv"
+            ###### AWS ##########
+            #####################
+            "aws_cloudfront.csv",
+            "aws_cloudtrail.csv",
+            "aws_cost_explorer.csv",
+            "aws_dynamodb.csv",
+            "aws_ebs.csv",
+            "aws_ec2.csv",
+            "aws_ecs.csv",
+            "aws_eks.csv",
+            "aws_elasticache.csv",
+            "aws_emr.csv",
+            "aws_lambda.csv",
+            "aws_network.csv",
+            "aws_rds.csv",
+            "aws_redshift.csv",
+            "aws_route53.csv",
+            "aws_s3.csv",
+            "aws_secretsmanager.csv",
+            "aws_cloudwatch.csv",
+            ###### Azure ########
+            #####################
+            "azure_compute.csv",
+            "azure_network_azure.csv",
+            "azure_sql.csv",
+            "azure_storage.csv",
+            ###### GCP #########
+            ####################
+            "gcp_bigquery.csv",
+            "gcp_compute.csv",
+            "gcp_logging.csv",
+            "gcp_sql.csv",
+            "gcp_storage.csv",
         ]
 
         if str(filename) not in allowed_filenames:
@@ -59,6 +74,8 @@ class AWSThriftyParser(object):
         for row in reader:
             result = {
                     'title': row.get('title', ''),
+                    'group_id': row.get('group_id', ''),
+                    'subscription' : row.get('subscription', ''),
                     'description': row.get('description', ''),
                     'control_id': row.get('control_id', ''),
                     'control_title': row.get('control_title', ''),
@@ -70,7 +87,6 @@ class AWSThriftyParser(object):
                     'account_id': row.get('account_id', ''),
                     'region': row.get('region', ''),
                     'service': row.get('service', ''),
-                    'group_id': row.get('group_id', ''),
                     'category': row.get('category', ''),
                     'class' : row.get('class', ''),
                     'type' : row.get('type', ''),
@@ -92,6 +108,9 @@ class AWSThriftyParser(object):
 
             elif 'service' in result:
                 description += "**Service:** " + result['service'] + "\n"
+            
+            elif 'subscription' in result:
+                description += "**subscription:** " + result['subscription'] + "\n"
 
             description += "**Resource:** " + resource + "\n"
 
