@@ -46,7 +46,7 @@ class ThriftyParser(object):
             ###### Azure ########
             #####################
             "azure_compute.csv",
-            "azure_network_azure.csv",
+            "azure_network.csv",
             "azure_sql.csv",
             "azure_storage.csv",
             ###### GCP #########
