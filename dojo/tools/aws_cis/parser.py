@@ -36,14 +36,13 @@ class AWSCISParser(object):
                     'reason': row.get('reason', ''),
                     'resource': row.get('resource', ''),
                     'status': row.get('status', ''),
-                    'severity': row.get('severity', 'Info'),
+                    'severity': row.get('severity', 'Info').title(),
                     'account_id': row.get('account_id', ''),
                     'region': row.get('region', ''),
                     'service': row.get('service', ''),
                     
                 }
-            if result['severity'].strip() == '':
-                result['severity']='Info'
+            
 
             resource = result['resource']
             reference = "**Benchmark:** " + result['title'] + "\n" + result['description']

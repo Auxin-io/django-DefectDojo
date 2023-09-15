@@ -36,7 +36,7 @@ class GCPCISParser(object):
                     'reason': row.get('reason', ''),
                     'resource': row.get('resource', ''),
                     'status': row.get('status', ''),
-                    'severity': row.get('severity', ''),
+                    'severity': row.get('severity', 'High').title(),
                     'location': row.get('location', ''),
                     'project': row.get('project', ''),
                     'project_id' : row.get('project_id',''),
@@ -44,8 +44,7 @@ class GCPCISParser(object):
                     'benchmark': row.get('benchmark', '')
                     
                 }
-            if result.get('severity') is None or result['severity'].strip() == '':
-                result['severity']='High'
+            
 
             resource = result['resource']
             reference = "**Benchmark:** " + result['benchmark'] + "\n" + \

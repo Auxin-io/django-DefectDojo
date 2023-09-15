@@ -37,13 +37,12 @@ class AzureNISTParser(object):
                     'reason': row.get('reason', ''),
                     'resource': row.get('resource', ''),
                     'status': row.get('status', ''),
-                    'severity': row.get('severity', 'Info'),
+                    'severity': row.get('severity', 'Info').title(),
                     'name': row.get('name', ''),
                     'subscription': row.get('subscription', ''),
                     'service': row.get('service', ''),
                 }
-            if result['severity'].strip() == '':
-                result['severity'] = 'High'
+            
 
             resource = result['resource']
             reference = "**Benchmark:** " + result['title'] + "\n" + result['description']

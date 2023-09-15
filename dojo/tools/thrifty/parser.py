@@ -83,7 +83,7 @@ class ThriftyParser(object):
                     'reason': row.get('reason', ''),
                     'resource': row.get('resource', ''),
                     'status': row.get('status', ''),
-                    'severity': row.get('severity', 'Info').capitalize(),
+                    'severity': row.get('severity', 'Info').title(),
                     'account_id': row.get('account_id', ''),
                     'region': row.get('region', ''),
                     'service': row.get('service', ''),
@@ -97,8 +97,7 @@ class ThriftyParser(object):
             resource = result['resource']
             reference = "**Benchmark:** " + result['title'] + "\n" + result['description']
             description = ""
-            if result['severity'].strip() == '':
-                result['severity'] = 'High'
+            
 
             elif 'account_id' in result:
                     description += "**Account Id:** " + result['account_id'] + "\n"

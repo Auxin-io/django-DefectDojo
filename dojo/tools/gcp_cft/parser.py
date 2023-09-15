@@ -36,7 +36,7 @@ class GCPCFTParser(object):
                     'reason': row.get('reason', ''),
                     'resource': row.get('resource', ''),
                     'status': row.get('status', ''),
-                    'severity': row.get('severity', ''),
+                    'severity': row.get('severity', 'High').title(),
                     'location': row.get('location', ''),
                     'project': row.get('project', ''),
                     'project_id' : row.get('project_id',''),
@@ -44,8 +44,7 @@ class GCPCFTParser(object):
                     'title': row.get('title', '')
                     
                 }
-            if result.get('severity') is None or result['severity'].strip() == '':
-                result['severity']='High'
+            
 
             resource = result['resource']
             reference = "**Benchmark:** " +result['title'] + "\n" + result['description']

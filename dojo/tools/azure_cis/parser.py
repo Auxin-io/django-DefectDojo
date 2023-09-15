@@ -36,7 +36,7 @@ class AzureCISParser(object):
                     'reason': row.get('reason', ''),
                     'resource': row.get('resource', ''),
                     'status': row.get('status', ''),
-                    'severity': row.get('severity', ''),
+                    'severity': row.get('severity', 'High').title(),
                     'name': row.get('name', ''),
                     'subscription': row.get('subscription', ''),
                     'service': row.get('service', ''),

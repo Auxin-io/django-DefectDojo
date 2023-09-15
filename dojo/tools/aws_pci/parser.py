@@ -42,8 +42,7 @@ class AWSPCIParser(object):
                     'region': row.get('region', ''),
                     'service': row.get('service', ''),
                 }
-            if result['severity'].strip() == '':
-                result['severity'] = 'Info'
+            
 
             resource = result['resource']
             reference = "**Benchmark:** " + result['title'] + "\n" + result['description']
