@@ -37,7 +37,7 @@ class AzureHipaaParser(object):
                     'reason': row.get('reason', ''),
                     'resource': row.get('resource', ''),
                     'status': row.get('status', ''),
-                    'severity': row.get('severity', 'Info').title(),
+                    'severity': row.get('severity', 'Info'),
                     'name': row.get('name', ''),
                     'region': row.get('region', ''),
                     'subscription': row.get('subscription', ''),
@@ -61,7 +61,7 @@ class AzureHipaaParser(object):
                                 "**Status:** " + result['status'] + "\n" + \
                                 "**Control Id:** " + result['control_id'],
 
-                    severity = result['severity'],
+                    severity = result['severity'].title(),
                     references = reference
                 )
                 

@@ -37,7 +37,7 @@ class AWSACSParser(object):
                     'reason': row.get('reason', ''),
                     'resource': row.get('resource', ''),
                     'status': row.get('status', ''),
-                    'severity': row.get('severity', 'Info').title(),
+                    'severity': row.get('severity', 'Info'),
                     'account_id': row.get('account_id', ''),
                     'region': row.get('region', ''),
                     'service': row.get('service', ''),
@@ -59,7 +59,7 @@ class AWSACSParser(object):
                                 "**Status:** " + result['status'] + "\n" + \
                                 "**Control Id:** "+ result['control_id'],
 
-                    severity = result['severity'],
+                    severity = result['severity'].title(),
                     references = reference
                 )
                 results.append(findings)

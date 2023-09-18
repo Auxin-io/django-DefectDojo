@@ -42,8 +42,7 @@ class AWSSOC2Parser(object):
                     'region': row.get('region', ''),
                     'service': row.get('service', ''),
                 }
-            if result['severity'].strip() == '':
-                result['severity'] = 'Info'
+            
 
             resource = result['resource']
             reference = "**Benchmark:** " + result['title'] + "\n" + result['description']
@@ -60,7 +59,7 @@ class AWSSOC2Parser(object):
                                 "**Status:** " + result['status'] + "\n" + \
                                 "**Control Id:** " + result['control_id'],
 
-                    severity = result['severity'],
+                    severity = result['severity'].title(),
                     references = reference
                 )
             

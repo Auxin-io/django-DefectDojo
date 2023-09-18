@@ -83,7 +83,7 @@ class ThriftyParser(object):
                     'reason': row.get('reason', ''),
                     'resource': row.get('resource', ''),
                     'status': row.get('status', ''),
-                    'severity': row.get('severity', 'Info').title(),
+                    'severity': row.get('severity', 'Info'),
                     'account_id': row.get('account_id', ''),
                     'region': row.get('region', ''),
                     'service': row.get('service', ''),
@@ -99,7 +99,7 @@ class ThriftyParser(object):
             description = ""
             
 
-            elif 'account_id' in result:
+            if 'account_id' in result:
                     description += "**Account Id:** " + result['account_id'] + "\n"
 
             elif 'region' in result:
@@ -145,7 +145,7 @@ class ThriftyParser(object):
                         test=test,
                         title=result["control_title"],
                         description = description,
-                        severity=result['severity'],
+                        severity=result['severity'].title(),
                         references=reference
                     )
 

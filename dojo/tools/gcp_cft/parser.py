@@ -36,7 +36,7 @@ class GCPCFTParser(object):
                     'reason': row.get('reason', ''),
                     'resource': row.get('resource', ''),
                     'status': row.get('status', ''),
-                    'severity': row.get('severity', 'High').title(),
+                    'severity': row.get('severity', 'High'),
                     'location': row.get('location', ''),
                     'project': row.get('project', ''),
                     'project_id' : row.get('project_id',''),
@@ -62,7 +62,7 @@ class GCPCFTParser(object):
                                 "**Status:** " + result['status'] + "\n" + \
                                 "**Control Id:** " + result['control_id'],
 
-                    severity = result['severity'],
+                    severity = result['severity'].title(),
                     references = reference
                     # cwe = result['control_id'],
                     # finding.notes.add(result['reason'])
