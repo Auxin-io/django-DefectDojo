@@ -43,7 +43,8 @@ class AWSSOC2Parser(object):
                     'service': row.get('service', ''),
                 }
             
-
+            if result['severity'].strip() == '':
+                result['severity'] = 'High'
             resource = result['resource']
             reference = "**Benchmark:** " + result['title'] + "\n" + result['description']
             try:

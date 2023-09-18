@@ -42,7 +42,8 @@ class AWSNISTParser(object):
                     'region': row.get('region', ''),
                     'service': row.get('service', ''),
                 }
-            
+            if result['severity'].strip() == '':
+                result['severity'] = 'High'
             resource = result['resource']
             reference = "**Benchmark:** " + result['title'] + "\n" + result['description']
             try: 

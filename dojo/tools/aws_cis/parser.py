@@ -43,6 +43,8 @@ class AWSCISParser(object):
                     
                 }
             
+            if result['severity'].strip() == '':
+                result['severity'] = 'High'
 
             resource = result['resource']
             reference = "**Benchmark:** " + result['title'] + "\n" + result['description']
