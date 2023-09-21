@@ -332,6 +332,7 @@ else:
             'PASSWORD': env('DD_DATABASE_PASSWORD'),
             'HOST': env('DD_DATABASE_HOST'),
             'PORT': env('DD_DATABASE_PORT'),
+            'OPTIONS': {'charset': 'utf8mb4'}
         }
     }
 
