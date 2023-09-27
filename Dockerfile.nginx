@@ -91,7 +91,7 @@ ENV \
   DD_UWSGI_PORT="3031" \
 
   # Use this variable for local development 
-  DD_UWSGI_HOST="uwsgi" \
+  #DD_UWSGI_HOST="uwsgi" \
   
   GENERATE_TLS_CERTIFICATE="false" \
   USE_TLS="false" \
