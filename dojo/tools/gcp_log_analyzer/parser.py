@@ -22,29 +22,13 @@ class GCPLogAnalyzerParser(object):
 
         results = []
         for item in report["hits"]["hits"]:
-            try:
-                full_name = item["_source"]["user"]["email"]
-                domain = item["_source"]["googlecloud"]["audit"]["authentication_info"]["principal_email"]
-            except:
-                full_name = None
-                domain = None
-
-            try:
-                audit_request= item["_source"]["googlecloud"]["audit"]["request"]["proto_name"]
-                service = item["_source"]["googlecloud"]["audit"]["service_name"]
-                resource = item["_source"]["googlecloud"]["audit"]["resource_name"]
-                action = item["_source"]["googlecloud"]["audit"]["method_name"]
-            except:
-                audit_request = None
-                service = None
-                resource = None
-                action = None
-
-            try:
-                project_id = item["_source"]["cloud"]["project"]["id"]
-            except:
-                raise Exception('project id is missing from the report. ' + \
-                                'search_path: ["_source"]["cloud"]["project"]["id"]')
+            full_name = item.get("_source", {}).get("user", {}).get("email", {})
+            domain = item.get("_source", {}).get("googlecloud", {}).get("audit", {}).get("authentication_info", {}).get("principal_email")
+            audit_request= item.get("_source", {}).get("googlecloud", {}).get("audit", {}).get("request", {}).get("proto_name", {})
+            service = item.get("_source", {}).get("googlecloud", {}).get("audit", {}).get("service_name", {})
+            resource = item.get("_source", {}).get("googlecloud", {}).get("audit", {}).get("resource_name", {})
+            action = item.get("_source", {}).get("googlecloud", {}).get("audit", {}).get("method_name", {})  
+            project_id = item.get("_source", {}).get("cloud", {}).get("project", {}).get("id", {})
 
             description = ""
             if project_id:
