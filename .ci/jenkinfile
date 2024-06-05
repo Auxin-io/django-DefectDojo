@@ -23,9 +23,8 @@ pipeline  {
         AWS_DEFAULT_REGION="${AWS_DEFAULT_REGION}"
         IMAGE_REPO_NAME="${IMAGE_REPO_NAME}"
         registryCredential="${registryCredential}"
-
-        // Build the registry
-        registry = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${IMAGE_REPO_NAME}"
+        azregistryCredential="${azregistryCredential}"
+        CLOUD_PROVIDER="${CLOUD_PROVIDER}"
 
         // Docker image used for pushing
         dockerImageDDnginx = ''
@@ -54,6 +53,19 @@ pipeline  {
 
     // stages
     stages {
+	    // Set Container Registry
+        stage('Set Registry') {
+            steps {
+                script {
+                    if (env.CLOUD_PROVIDER == "AWS") {
+                        registry = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${IMAGE_REPO_NAME}"
+                    } else if (env.CLOUD_PROVIDER == "Azure") {
+                        registry = "auxinregistry.azurecr.io/${IMAGE_REPO_NAME}"
+                    }
+                    echo "Registry set to: $registry"
+                }
+            }
+        }
 
         // Build Docker stage
         stage('Build Image') {
@@ -147,11 +159,22 @@ pipeline  {
 
                 // Groovy or shell code must go inside script tags
                 script {
-                    docker.withRegistry("https://" + registry, "ecr:us-east-1:" + registryCredential) {
+
+                    if ( env.CLOUD_PROVIDER == "AWS") {
+                    docker.withRegistry("https://" + registry, "ecr:us-east-1:" + registryCredential){
                     dockerImageDDnginx.push()
                     dockerImageDDdjango.push()
                     dockerImageDDmysql.push()
                     dockerImageDDrabbitmq.push()
+                    }
+                    } 
+                    else {
+                    docker.withRegistry("https://" + registry, azregistryCredential){
+                    dockerImageDDnginx.push()
+                    dockerImageDDdjango.push()
+                    dockerImageDDmysql.push()
+                    dockerImageDDrabbitmq.push()
+                    }
                     }
                 }
             }
