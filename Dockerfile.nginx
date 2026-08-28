@@ -40,7 +40,7 @@ ENV \
 RUN \
   apt-get -y update && \
   apt-get -y install --no-install-recommends apt-transport-https ca-certificates curl wget gnupg && \
-  curl -sSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add --no-tty - && \
+  apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 1655A0AB68576280 && \
   echo 'deb https://deb.nodesource.com/node_14.x bullseye main' > /etc/apt/sources.list.d/nodesource.list && \
   echo 'deb-src https://deb.nodesource.com/node_14.x bullseye main' >> /etc/apt/sources.list.d/nodesource.list && \
   apt-get update -y -o Dir::Etc::sourcelist="sources.list.d/nodesource.list" \
