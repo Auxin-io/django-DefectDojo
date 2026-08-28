@@ -14,6 +14,14 @@ def isThisTagUpdate() {
     return tags == 'tags'
 }
 
+// Returns a trimmed value, or the fallback when the value is empty/null.
+// Jenkins' environment block turns undefined params into the string "null",
+// so that case is treated as empty too.
+def configuredValue(value, fallback) {
+    def normalizedValue = value?.trim()
+    return normalizedValue && normalizedValue != 'null' ? normalizedValue : fallback
+}
+
 pipeline  {
     environment   {
 
@@ -26,24 +34,26 @@ pipeline  {
         azregistryCredential="${azregistryCredential}"
         CLOUD_PROVIDER="${CLOUD_PROVIDER}"
 
-        // Docker image used for pushing
+        // Local (Zot) registry parameters
+        localRegistryCredential="${localRegistryCredential}"
+        LOCAL_REGISTRY="${LOCAL_REGISTRY}"
+        SERVICE_NAME="${SERVICE_NAME}"
+
+        // Docker images used for pushing
         dockerImageDDnginx = ''
         dockerImageDDdjango = ''
         dockerImageDDmysql = ''
         dockerImageDDrabbitmq = ''
 
-        // Conditonal Dynamic variables
-        // BranchName = getBranchName()
-        // TagName    = getTagName()
+        // Conditional Dynamic variables
         IsThisTagUpdate = isThisTagUpdate()
-        
-        // Get Current Time
-        // https://www.thiscodeworks.com/current-date-at-pipeline-method-1-variable-groovy-jenkins-pipeline/610bc8aef724050014f7d22f
+
+        // Get Current Datetime
         currentDate = sh(returnStdout: true, script: 'date --utc +%Y-%m-%d-%H-%M-%S').trim()
     }
 
     /*
-     * Usefule reference links:
+     * Useful reference links:
      * https://stackoverflow.com/questions/44330148/run-bash-command-on-jenkins-pipeline
      * https://stackoverflow.com/questions/48762111/how-to-detect-jenkins-multibranch-branch-or-tag
      */
@@ -61,6 +71,11 @@ pipeline  {
                         registry = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${IMAGE_REPO_NAME}"
                     } else if (env.CLOUD_PROVIDER == "Azure") {
                         registry = "auxinregistry.azurecr.io/${IMAGE_REPO_NAME}"
+                    } else if (env.CLOUD_PROVIDER == "Local") {
+                        def localRegistry = configuredValue(env.LOCAL_REGISTRY, '10.10.0.40:5000')
+                        def serviceName   = configuredValue(env.SERVICE_NAME, configuredValue(env.IMAGE_REPO_NAME, env.JOB_BASE_NAME))
+                        registry = "${localRegistry}/${serviceName}"
+                        registryEndpoint = "http://${localRegistry}"
                     }
                     echo "Registry set to: $registry"
                 }
@@ -69,112 +84,174 @@ pipeline  {
 
         // Build Docker stage
         stage('Build Image') {
-            steps{
-            
-                // Groovy or shell code must go inside script tags
+            steps {
                 script {
+                    if (env.CLOUD_PROVIDER == "Local") {
+                        // Local Zot registry: build + push with self-contained docker CLI
+                        def isThisTagBuild = "${env.IsThisTagUpdate}"
+                        def tagSuffix = ""
+                        if ( isThisTagBuild == "true" ) {
+                            def (remoteName, tags, gitTag) = "${env.GIT_BRANCH}".tokenize( '/' )
+                            tagSuffix = "_${gitTag}"
+                        }
 
-                    def buildOptionsDDdjango = """\
-                       -f Dockerfile.django \
-                       ."""
+                        def imageRefNginx    = "${registry}:DDnginx${tagSuffix}"
+                        def imageRefDjango   = "${registry}:DDdjango${tagSuffix}"
+                        def imageRefMysql    = "${registry}:DDmysql${tagSuffix}"
+                        def imageRefRabbitmq = "${registry}:DDrabbitmq${tagSuffix}"
 
-                    def buildOptionsDDnginx = """\
-                       -f Dockerfile.nginx \
-                       ."""  
-                    
-                    def buildOptionsDDmysql = """\
-                        -f Dockerfile.mysql \
-                        ."""  
+                        def localRegistryCredentialId = configuredValue(env.localRegistryCredential, 'localRegistryCredential')
 
-                    def buildOptionsDDrabbitmq = """\
-                        -f Dockerfile.rabbitmq \
-                        ."""  
+                        withCredentials([
+                            usernamePassword(
+                                credentialsId: localRegistryCredentialId,
+                                usernameVariable: 'LOCAL_REGISTRY_USERNAME',
+                                passwordVariable: 'LOCAL_REGISTRY_PASSWORD'
+                            )
+                        ]) {
+                            withEnv([
+                                "LOCAL_REGISTRY_HOST=${registryEndpoint - 'http://'}",
+                                "IMAGE_REF_NGINX=${imageRefNginx}",
+                                "IMAGE_REF_DJANGO=${imageRefDjango}",
+                                "IMAGE_REF_MYSQL=${imageRefMysql}",
+                                "IMAGE_REF_RABBITMQ=${imageRefRabbitmq}"
+                            ]) {
+                                sh '''
+                                    set -eu
 
-                    // Echo some sanity value
-                    echo "is this is a tag build: ${env.IsThisTagUpdate}"
+                                    dockerCli="$WORKSPACE/.tools/docker/docker"
+                                    dockerConfig="$WORKSPACE/.tools/docker-config"
+                                    mkdir -p "$dockerConfig"
 
-                    // define a variable
-                    def isThisTagBuild = "${env.IsThisTagUpdate}"
-                    echo isThisTagBuild
+                                    if [ ! -x "$dockerCli" ]; then
+                                        echo "Downloading Docker CLI..."
+                                        mkdir -p "$WORKSPACE/.tools/docker"
+                                        curl -fsSL https://download.docker.com/linux/static/stable/x86_64/docker-27.5.1.tgz | \
+                                            tar -xz -C "$WORKSPACE/.tools/docker" \
+                                            --strip-components=1 docker/docker
+                                    fi
 
-                    if ( isThisTagBuild == "true" ){
-                        // Print out the Tag Build
-                        echo "We are building a Tag Build"
+                                    export DOCKER_CONFIG="$dockerConfig"
 
-                        //print git commiter name
-                        sh "echo 'The commiter name is $GIT_COMMITTER_NAME'"
+                                    echo "Logging into registry..."
+                                    printf '%s' "$LOCAL_REGISTRY_PASSWORD" | \
+                                        "$dockerCli" login "$LOCAL_REGISTRY_HOST" \
+                                        --username "$LOCAL_REGISTRY_USERNAME" \
+                                        --password-stdin
 
-                        def buildOptionsDDdjangotag = """\
-                        -f Dockerfile.django \
-                        ."""
+                                    echo "Building and pushing $IMAGE_REF_DJANGO"
+                                    "$dockerCli" build --tag "$IMAGE_REF_DJANGO" -f Dockerfile.django .
+                                    "$dockerCli" push "$IMAGE_REF_DJANGO"
 
-                        def buildOptionsDDnginxtag = """\
-                        -f Dockerfile.nginx \
-                        ."""  
+                                    echo "Building and pushing $IMAGE_REF_NGINX"
+                                    "$dockerCli" build --tag "$IMAGE_REF_NGINX" -f Dockerfile.nginx .
+                                    "$dockerCli" push "$IMAGE_REF_NGINX"
 
-                        def buildOptionsDDmysqltag = """\
-                        -f Dockerfile.mysql \
-                        ."""  
+                                    echo "Building and pushing $IMAGE_REF_MYSQL"
+                                    "$dockerCli" build --tag "$IMAGE_REF_MYSQL" -f Dockerfile.mysql .
+                                    "$dockerCli" push "$IMAGE_REF_MYSQL"
 
-                        def buildOptionsDDrabbitmqtag = """\
-                        -f Dockerfile.rabbitmq \
-                        ."""  
+                                    echo "Building and pushing $IMAGE_REF_RABBITMQ"
+                                    "$dockerCli" build --tag "$IMAGE_REF_RABBITMQ" -f Dockerfile.rabbitmq .
+                                    "$dockerCli" push "$IMAGE_REF_RABBITMQ"
 
-                        // Get the tag name
-                        def inputBranchName = "${env.GIT_BRANCH}"
-                        echo inputBranchName
+                                    echo "All DefectDojo images pushed successfully to local registry"
+                                '''
+                            }
+                        }
+                    } else {
+                        def buildOptionsDDdjango = """\
+                           -f Dockerfile.django \
+                           ."""
 
-                        // Tokenize the input
-                        def (remoteName, tags, tagName) = inputBranchName.tokenize( '/' )
-                        echo tagName
+                        def buildOptionsDDnginx = """\
+                           -f Dockerfile.nginx \
+                           ."""  
                         
-                        //Build a dockerfile based on args and define them in variable for Production
-                       //we are passing the git tag version and current date
- 
-                        // make the image using base tag name
-                        dockerImageDDnginx = docker.build(registry + ":DDnginx" + "_$tagName", buildOptionsDDnginxtag)
-                        dockerImageDDdjango = docker.build(registry + ":DDdjango" + "_$tagName", buildOptionsDDdjangotag)
-                        dockerImageDDmysql = docker.build(registry + ":DDmysql" + "_$tagName", buildOptionsDDmysqltag)
-                        dockerImageDDrabbitmq = docker.build(registry + ":DDrabbitmq" + "_$tagName", buildOptionsDDrabbitmqtag)
-                    }
-                    else{
-                        echo "We are building a non tag build"
+                        def buildOptionsDDmysql = """\
+                            -f Dockerfile.mysql \
+                            ."""  
 
-                        //print git commiter name
-                        sh "echo 'Hello from main $GIT_COMMITTER_NAME'"                     
-                        
-                        // make the image using base job name
-                        dockerImageDDnginx = docker.build(registry + ":DDnginx", buildOptionsDDnginx)
-                        dockerImageDDdjango = docker.build(registry + ":DDdjango", buildOptionsDDdjango)
-                        dockerImageDDmysql = docker.build(registry + ":DDmysql", buildOptionsDDmysql)
-                        dockerImageDDrabbitmq = docker.build(registry + ":DDrabbitmq", buildOptionsDDrabbitmq)
+                        def buildOptionsDDrabbitmq = """\
+                            -f Dockerfile.rabbitmq \
+                            ."""  
+
+                        // Echo some sanity value
+                        echo "is this is a tag build: ${env.IsThisTagUpdate}"
+
+                        // define a variable
+                        def isThisTagBuild = "${env.IsThisTagUpdate}"
+                        echo isThisTagBuild
+
+                        if ( isThisTagBuild == "true" ){
+                            echo "We are building a Tag Build"
+                            sh "echo 'The commiter name is $GIT_COMMITTER_NAME'"
+
+                            def buildOptionsDDdjangotag = """\
+                            -f Dockerfile.django \
+                            ."""
+
+                            def buildOptionsDDnginxtag = """\
+                            -f Dockerfile.nginx \
+                            ."""  
+
+                            def buildOptionsDDmysqltag = """\
+                            -f Dockerfile.mysql \
+                            ."""  
+
+                            def buildOptionsDDrabbitmqtag = """\
+                            -f Dockerfile.rabbitmq \
+                            ."""  
+
+                            // Get the tag name
+                            def inputBranchName = "${env.GIT_BRANCH}"
+                            echo inputBranchName
+
+                            // Tokenize the input
+                            def (remoteName, tags, tagName) = inputBranchName.tokenize( '/' )
+                            echo tagName
+                            
+                            // make the image using base tag name
+                            dockerImageDDnginx = docker.build(registry + ":DDnginx" + "_$tagName", buildOptionsDDnginxtag)
+                            dockerImageDDdjango = docker.build(registry + ":DDdjango" + "_$tagName", buildOptionsDDdjangotag)
+                            dockerImageDDmysql = docker.build(registry + ":DDmysql" + "_$tagName", buildOptionsDDmysqltag)
+                            dockerImageDDrabbitmq = docker.build(registry + ":DDrabbitmq" + "_$tagName", buildOptionsDDrabbitmqtag)
+                        }
+                        else{
+                            echo "We are building a non tag build"
+                            sh "echo 'Hello from main $GIT_COMMITTER_NAME'"                     
+                            
+                            // make the image using base job name
+                            dockerImageDDnginx = docker.build(registry + ":DDnginx", buildOptionsDDnginx)
+                            dockerImageDDdjango = docker.build(registry + ":DDdjango", buildOptionsDDdjango)
+                            dockerImageDDmysql = docker.build(registry + ":DDmysql", buildOptionsDDmysql)
+                            dockerImageDDrabbitmq = docker.build(registry + ":DDrabbitmq", buildOptionsDDrabbitmq)
+                        }
                     }
                 }
             }
         }
 
-        // Stage to publish to ECR
-        stage('Publish to ECR') {
-            steps{
-
-                // Groovy or shell code must go inside script tags
+        // Stage to publish to registry
+        stage('Publish to registry') {
+            steps {
                 script {
-
                     if ( env.CLOUD_PROVIDER == "AWS") {
-                    docker.withRegistry("https://" + registry, "ecr:us-east-1:" + registryCredential){
-                    dockerImageDDnginx.push()
-                    dockerImageDDdjango.push()
-                    dockerImageDDmysql.push()
-                    dockerImageDDrabbitmq.push()
-                    }
-                    } 
-                    else {
-                    docker.withRegistry("https://" + registry, azregistryCredential){
-                    dockerImageDDnginx.push()
-                    dockerImageDDdjango.push()
-                    dockerImageDDmysql.push()
-                    dockerImageDDrabbitmq.push()
-                    }
+                        docker.withRegistry("https://" + registry, "ecr:us-east-1:" + registryCredential){
+                            dockerImageDDnginx.push()
+                            dockerImageDDdjango.push()
+                            dockerImageDDmysql.push()
+                            dockerImageDDrabbitmq.push()
+                        }
+                    } else if ( env.CLOUD_PROVIDER == "Local") {
+                        echo "Local images were built and pushed in the Build Image stage"
+                    } else {
+                        docker.withRegistry("https://" + registry, azregistryCredential){
+                            dockerImageDDnginx.push()
+                            dockerImageDDdjango.push()
+                            dockerImageDDmysql.push()
+                            dockerImageDDrabbitmq.push()
+                        }
                     }
                 }
             }
